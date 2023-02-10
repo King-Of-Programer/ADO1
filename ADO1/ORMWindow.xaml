@@ -42,12 +42,12 @@
                             Handler="DepartmentsItems_MouseDoubleClick"/>
                     </Style>
                 </ListView.Resources>
-            </ListView><!--"newDepartmentButton_Click"/>-->
-            <!--<Button 
+            </ListView>
+            <Button
                 x:Name="newDepartmentButton"
                 Content="Новий відділ"
                 Margin="5"
-               />-->
+                Click="newDepartmentButton_Click"/>
         </StackPanel>
         <StackPanel Orientation="Vertical"
                     Grid.Row="0" Grid.Column="1">

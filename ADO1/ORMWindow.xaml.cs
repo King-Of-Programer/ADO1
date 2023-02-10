@@ -23,26 +23,31 @@ namespace ADO1
     {
         public ObservableCollection<Entity.Department> Departments { get; set; }
         public ObservableCollection<Entity.Product> Products { get; set; }
-
+        public ObservableCollection<Entity.Managers> Managers { get; set; }
 
         private SqlConnection _connection;
+        private DepartmentCrudWindow _dialogDepartment;
+        private NewDepartmentWindow _newDepartmentWindow;
         public ORMWindow()
         {
             InitializeComponent();
+
             Departments = new ObservableCollection<Entity.Department>();
             Products = new ObservableCollection<Entity.Product>();
-           
+            Managers = new ObservableCollection<Entity.Managers>();
 
             DataContext = this;
 
             _connection = new(App.ConnectionString);
 
-          
+            _dialogDepartment = null;
         }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             _connection.Open();
             LoadDepartments();
+            LoadManagers();
             LoadProducts();
         }
 
@@ -129,8 +134,48 @@ namespace ADO1
             }
         }
 
+        private void LoadManagers()
+        {
+            SqlCommand cmd = new() { Connection = _connection };
+            try
+            {
+                cmd.CommandText = "SELECT M.Id, M.Surname, M.Name, M.Secname, M.Id_main_dep, M.Id_sec_dep, M.Id_chief  FROM Managers M";
+
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Managers.Add(new Entity.Managers
+                    {
+                        Id = reader.GetGuid(0),
+                        Surname = reader.GetString(1),
+                        Name = reader.GetString(2),
+                        Secname = reader.GetString(3),
+                        IdMainDep = reader.GetGuid(4),
+                        IdSecDep = reader.GetValue(5) == DBNull.Value
+                        ? null
+                            : reader.GetGuid(5),
+                        IdChief = reader.IsDBNull(6)
+                        ? null
+                            : reader.GetGuid(6)
+
+                    });
+                }
+                reader.Close();
+                cmd.Dispose();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Window will be closed",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                this.Close();
+            }
+        }
 
         #endregion
+
         #region DOUBLE_CLICKS
         private void DepartmentsItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -140,56 +185,82 @@ namespace ADO1
             {
                 if (item.Content is Entity.Department department)
                 {
-                    //_dialogDepartment = new();
-                    //_dialogDepartment.Department = department;
-                    //if (_dialogDepartment.ShowDialog() == true)
-                    //{
-                    //    if (_dialogDepartment.Department is null) //Delete
-                    //    {
-                    //        string command =
-                    //            "DELETE FROM Departments " +
-                    //             $"WHERE Id = '{department.Id}'; ";
-                    //        ExecuteCommand(command, $"Delete: {department.Name}");
-                    //    }
-                    //    else // Update
-                    //    {
-                    //        //MessageBox.Show(department.ToString());                            
-                    //        string command =
-                    //            "UPDATE Departments " +
-                    //            $"SET Name = N'{department.Name}' " +
-                    //            $"WHERE Id='{department.Id}';";
-                    //        ExecuteCommand(command, "Update Department Name");
-                    //        Departments.Clear();
-                    //        LoadDepartments();
-                    //    }
-                   // }
+                    _dialogDepartment = new();
+                    _dialogDepartment.Department = department;
+                    if (_dialogDepartment.ShowDialog() == true)
+                    {
+                        if (_dialogDepartment.Department is null) //Delete
+                        {
+                            string command =
+                                "DELETE FROM Departments " +
+                                 $"WHERE Id = '{department.Id}'; ";
+                            ExecuteCommand(command, $"Delete: {department.Name}");
+                            Departments.Clear();
+                            LoadDepartments();
+                        }
+                        else // Update
+                        {
+                            //MessageBox.Show(department.ToString());                            
+                            string command =
+                                "UPDATE Departments " +
+                                $"SET Name = N'{department.Name}' " +
+                                $"WHERE Id='{department.Id}';";
+                            ExecuteCommand(command, "Update Department Name");
+                            Departments.Clear();
+                            LoadDepartments();
+                        }
+                    }
                 }
             }
         }
 
         private void ProductsItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            //if (sender is ListViewItem item)
-            //{
-            //    if (item.Content is Entity.Product product)
-            //    {
-            //        MessageBox.Show(product.ToString());
-            //    }
-            //}
+            if (sender is ListViewItem item)
+            {
+                if (item.Content is Entity.Product product)
+                {
+                    MessageBox.Show(product.ToString());
+                }
+            }
+           
         }
 
         private void ManagersItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender is ListViewItem item)
             {
-                //if (item.Content is Entity.Manager manager)
-                //{
-                //    MessageBox.Show(manager.ToString());
-                //}
+                if (item.Content is Entity.Managers manager)
+                {
+                    MessageBox.Show(manager.ToString());
+                }
             }
+
         }
         #endregion
 
-
+        private void newDepartmentButton_Click(object sender, RoutedEventArgs e)
+        {
+            Entity.Department department = new();
+            _newDepartmentWindow = new NewDepartmentWindow();
+            _newDepartmentWindow.Department = department;
+            if (_newDepartmentWindow.ShowDialog() == true)
+            {
+                if (department != null)
+                {
+                    string command = @"INSERT INTO Departments 
+                 (Id, Name)
+                    VALUES" +
+                    $"(N'{department.Id}', N'{department.Name}')";
+                    ExecuteCommand(command, "Create new Department");
+                    Departments.Clear();
+                    LoadDepartments();
+                }
+            }
+           
+        }
     }
+
+
 }
+
