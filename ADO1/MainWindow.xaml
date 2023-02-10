@@ -216,5 +216,82 @@
                 <TextBlock x:Name="ViewDepartments"/>
             </ScrollViewer>
         </StackPanel>
+        <!--Managers-->
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1">
+            <Label Content="Managers" FontSize="24" FontWeight="DemiBold"
+                   HorizontalAlignment="Center"/>
+            <ScrollViewer MaxHeight="160" MaxWidth="300"
+                          VerticalScrollBarVisibility="Visible"
+                          HorizontalScrollBarVisibility="Visible">
+                <Grid x:Name="Viewer" ShowGridLines="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        Text="Name"
+                        FontSize="17"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"/>
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="Surname"
+                        FontSize="17"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"/>
+                    <TextBlock
+                        Grid.Column="2"
+                        Text="Secname"
+                        FontSize="17"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"/>
+                    <TextBlock
+                        Grid.Column="3"
+                        Text="Department"
+                        FontSize="17"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"/>
+                </Grid>
+            </ScrollViewer>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2">
+            <Label Content="Products" FontSize="24" FontWeight="DemiBold"
+                   HorizontalAlignment="Center"/>
+            <ScrollViewer MaxHeight="160" MaxWidth="300"
+                          VerticalScrollBarVisibility="Visible"
+                          HorizontalScrollBarVisibility="Visible">
+                <Grid x:Name="ProductsViewer" ShowGridLines="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Text="Id"
+                        FontSize="17"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"/>
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="Name"
+                        FontSize="17"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"/>
+                    <TextBlock
+                        Grid.Column="2"
+                        Text="Price"
+                        FontSize="17"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"/>
+
+                </Grid>
+
+            </ScrollViewer>
+        </StackPanel>
     </Grid>
 </Window>

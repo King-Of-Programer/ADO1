@@ -30,10 +30,7 @@ namespace ADO1
             //!! Створення об'єкта не відкриває підключення
             _connection = new SqlConnection();
             // Головний параметр підключення - рядок підключення
-            _connection.ConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Alex\source\repos\ADO1\ADO1\Database1.mdf;Integrated Security=True;Integrated Security=True";
-
-  
-         
+            _connection.ConnectionString = App.ConnectionString;
         }
 
         #region WINDOW_EVENTS
@@ -55,6 +52,8 @@ namespace ADO1
             }
             ShowMonitor();
             ShowDepartments();
+            ShowManagers();
+            ShowProducts();
         }
 
         private void Window_Closed(object sender, System.EventArgs e)
@@ -440,6 +439,7 @@ namespace ADO1
 
         #region Запити із результатами
 
+        #region ЕЛЕМЕНТИ_КЕРУВАННЯ
         private String shortString(string text)
         {
             string result = "";
@@ -449,7 +449,100 @@ namespace ADO1
             result += text.Substring(length - 3);
             return result;
         }
+        TextBlock createTextBlock(string text)
+        {
+            TextBlock block = new TextBlock();
+            block.Text = text;
+            block.TextAlignment = TextAlignment.Center;
+            block.TextWrapping = TextWrapping.Wrap;
+            block.FontSize = 15;
+            return block;
+        }
+        #endregion
 
+        //МАЛЮЄ ТАБЛИЦЮ ДЛЯ МЕНЕДЖЕРІВ
+        void ManagersViewer(SqlDataReader reader, int count)
+        {
+            RowDefinition row = new RowDefinition();
+            Viewer.RowDefinitions.Add(row);
+            for (int i = 0; i < 4; i++)
+            {
+                var textBlock = createTextBlock(reader.GetString(i));
+                Grid.SetRow(textBlock, count);
+                Grid.SetColumn(textBlock, i);
+                Viewer.Children.Add(textBlock);
+            }
+        }
+        //МАЛЮЄ ТАБЛИЦЮ ДЛЯ ПРОДУКТІВ
+        void ProductViewer(SqlDataReader reader, int count)
+        {
+            RowDefinition row = new RowDefinition();
+            ProductsViewer.RowDefinitions.Add(row);
+            var textBlock = createTextBlock(shortString(reader.GetGuid(0).ToString()));
+            Grid.SetRow(textBlock, count);
+            Grid.SetColumn(textBlock, 0);
+            ProductsViewer.Children.Add(textBlock);
+
+            textBlock = createTextBlock(reader.GetString(1));
+            Grid.SetRow(textBlock, count);
+            Grid.SetColumn(textBlock, 1);
+            ProductsViewer.Children.Add(textBlock);
+
+            textBlock = createTextBlock(reader.GetDouble(2).ToString());
+            Grid.SetRow(textBlock, count);
+            Grid.SetColumn(textBlock, 2);
+            ProductsViewer.Children.Add(textBlock);
+
+        }
+        //ВІДОБРАЖАЄ ТАБЛИЦЮ З МЕНЕДЖЕРАМИ
+        private void ShowManagers()
+        {
+            using SqlCommand cmd = new("SELECT Surname, Managers.Name, Secname, Departments.Name FROM Managers INNER JOIN Departments ON Managers.Id_sec_dep=Departments.Id", _connection);
+            try
+            {
+                SqlDataReader reader = cmd.ExecuteReader();
+                int count = 0;
+                while (reader.Read())
+                {
+                    count++;
+                    ManagersViewer(reader, count);
+                }
+                reader.Close();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Query error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+        //ВІДОБРАЖАЄ ТАБЛИЦЮ З ПРОДУКТАМИ
+        private void ShowProducts()
+        {
+            using SqlCommand cmd = new("SELECT * FROM Products", _connection);
+            try
+            {
+                SqlDataReader reader = cmd.ExecuteReader();
+                int count = 0;
+                while (reader.Read())
+                {
+                    count++;
+                    ProductViewer(reader, count);
+                }
+                reader.Close();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Query error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+        //ВІДОБРАЖАЄ ДЕПАРТМЕНТИ
         private void ShowDepartments()
         {
             using SqlCommand cmd = new("SELECT * FROM Departments", _connection);
