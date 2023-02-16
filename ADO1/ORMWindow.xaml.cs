@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADO1.Entity;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SqlClient;
@@ -28,6 +29,7 @@ namespace ADO1
         private SqlConnection _connection;
         private DepartmentCrudWindow _dialogDepartment;
         private NewDepartmentWindow _newDepartmentWindow;
+        private ProductCudWindow _productDepartment;
         public ORMWindow()
         {
             InitializeComponent();
@@ -193,8 +195,10 @@ namespace ADO1
                         {
                             string command =
                                 "DELETE FROM Departments " +
-                                 $"WHERE Id = '{department.Id}'; ";
-                            ExecuteCommand(command, $"Delete: {department.Name}");
+                                 $"WHERE Id = @id; ";
+                            using SqlCommand cmd = new(command, _connection);
+                            cmd.Parameters.AddWithValue("@id", department.Id);
+                            ExecuteCommand(cmd.ToString(), $"Delete: {department.Name}");
                             Departments.Clear();
                             LoadDepartments();
                         }
@@ -202,10 +206,13 @@ namespace ADO1
                         {
                             //MessageBox.Show(department.ToString());                            
                             string command =
-                                "UPDATE Departments " +
-                                $"SET Name = N'{department.Name}' " +
-                                $"WHERE Id='{department.Id}';";
-                            ExecuteCommand(command, "Update Department Name");
+                                 "UPDATE Departments " +
+                                 $"SET Name = @name " +
+                                 $"WHERE Id=@id;";
+                            using SqlCommand cmd = new(command, _connection);
+                            cmd.Parameters.AddWithValue("@id", department.Id);
+                            cmd.Parameters.AddWithValue("@name", department.Name);
+                            ExecuteCommand(cmd.ToString(), "Update Department Name");
                             Departments.Clear();
                             LoadDepartments();
                         }
@@ -220,10 +227,34 @@ namespace ADO1
             {
                 if (item.Content is Entity.Product product)
                 {
-                    MessageBox.Show(product.ToString());
+                    _productDepartment = new();
+                    _productDepartment.Product = product;
+                    if (_productDepartment.ShowDialog() == true)
+                    {
+                        if (_productDepartment.Product is null) //Delete
+                        {
+                            string command =
+                                "DELETE FROM Products " +
+                                 $"WHERE Id = '{product.Id}'; ";
+                            ExecuteCommand(command, $"Delete: {product.Name}");
+                            Departments.Clear();
+                            LoadProducts();
+                        }
+                        else // Update
+                        {
+                            //MessageBox.Show(department.ToString());                            
+                            string command =
+                                "UPDATE Products " +
+                                $"SET Name = N'{product.Name}' " +
+                                $"WHERE Id='{product.Id}';";
+                            ExecuteCommand(command, "Update Proucts Name");
+                            Departments.Clear();
+                            LoadProducts();
+                        }
+                    }
                 }
             }
-           
+
         }
 
         private void ManagersItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -248,17 +279,51 @@ namespace ADO1
             {
                 if (department != null)
                 {
-                    string command = @"INSERT INTO Departments 
-                 (Id, Name)
-                    VALUES" +
-                    $"(N'{department.Id}', N'{department.Name}')";
-                    ExecuteCommand(command, "Create new Department");
+
+                    String sql = "INSERT INTO Department(Id, Name)" +
+                     " VALUES(@id, @name)";
+                    using SqlCommand cmd = new(sql, _connection);
+                    cmd.Parameters.AddWithValue("@id", department.Id);
+                    cmd.Parameters.AddWithValue("@name", department.Name);
+                    ExecuteCommand(cmd.ToString(), "Add new Product");
                     Departments.Clear();
                     LoadDepartments();
                 }
             }
            
         }
+
+        private void newProductButton_Click(object sender, RoutedEventArgs e)
+        {
+            ProductCudWindow dialog = new();
+            if (dialog.ShowDialog() == true)
+            {
+                if (dialog.Product is not null)
+                {
+                    //НЕ РЕКОМЕНДУЄТЬСЯ 
+                    //String sql = $"INSERT INTO Products(Id, Name, Price)" +
+                    //    $" VALUES('{dialog.Product.Id}', N'{dialog.Product.Name}', {dialog.Product.Price})";
+                    //ExecuteCommand(sql, "Add new Product");
+                    //Products.Clear();
+                    //LoadProducts();
+                    //MessageBox.Show(dialog.Product.ToString());
+
+                    String sql = "INSERT INTO Products(Id, Name, Price)" +
+                     " VALUES(@id, @name, @price)";
+                    using SqlCommand cmd = new(sql, _connection);
+                    cmd.Parameters.AddWithValue("@id", dialog.Product.Id);
+                    cmd.Parameters.AddWithValue("@name", dialog.Product.Name);
+                    cmd.Parameters.AddWithValue("@price", dialog.Product.Price);
+                    ExecuteCommand(cmd.ToString(), "Add new Product");
+                    Products.Clear();
+                    LoadProducts();
+                }
+            }
+
+        }
+
+
+
     }
 
 
