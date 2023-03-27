@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,11 +16,9 @@ using System.Windows.Threading;
 
 namespace ADO1
 {
-    /// <summary>
-    /// Interaction logic for DepartmentCrudWindow.xaml
-    /// </summary>
     public partial class DepartmentCrudWindow : Window
     {
+        //Обмінне поле - передається з викликаючого вікна
         public Entity.Department Department { get; set; }
 
         private bool SaveButtonState;
@@ -50,7 +49,12 @@ namespace ADO1
         {
             if (Department is null)  // режим додавання (Create)
             {
-                DeleteButton.IsEnabled = false;
+                Department = new Entity.Department();
+                Department.Id = Guid.NewGuid();
+
+                WindowName.Text = "CREATE DEPARTMENT";
+                CrudButtons.ColumnDefinitions.RemoveAt(1);
+                CrudButtons.Children.Remove(DeleteButton);
             }
             else // режим редагування чи видалення (Update or Delete)
             {
@@ -58,21 +62,20 @@ namespace ADO1
                 NameView.Text = Department.Name;
                 DeleteButton.IsEnabled = true;
             }
+            IdView.Text = Department.Id.ToString();
         }
         private void Window_Closed(object sender, EventArgs e)
         {
             timer.Stop();
         }
         #endregion
-
+        //ПЕРЕВІРКА НА ВВЕДЕННЯ ДАНИХ
         #region CONDITIONS
         private void CheckNameField(object sender, EventArgs args)
         {
             if (NameView.Text == Department.Name)
             {
                 SaveButtonState = false;
-                SaveButton.Background = Brushes.Gray;
-                SaveButton.Foreground = Brushes.Black;
                 ErrorText.Text = "*The text field contains the original value";
                 inputWasChaged = false;
             }
@@ -82,16 +85,12 @@ namespace ADO1
                 if (!stringIsEmpty)
                 {
                     SaveButtonState = true;
-                    SaveButton.Background = Brushes.DarkGreen;
-                    SaveButton.Foreground = Brushes.White;
                 }
             }
 
             if (NameView.Text.Trim() == String.Empty)
             {
                 SaveButtonState = false;
-                SaveButton.Background = Brushes.Gray;
-                SaveButton.Foreground = Brushes.Black;
                 ErrorText.Text = "*Field is empty or contains only spaces";
                 stringIsEmpty = true;
             }
@@ -101,8 +100,6 @@ namespace ADO1
                 if (inputWasChaged)
                 {
                     SaveButtonState = true;
-                    SaveButton.Background = Brushes.DarkGreen;
-                    SaveButton.Foreground = Brushes.White;
                 }
             }
         }
@@ -146,7 +143,6 @@ namespace ADO1
             {
                 Department = null;
                 this.DialogResult = true;
-
             }
         }
 
@@ -154,7 +150,6 @@ namespace ADO1
         {
             this.DialogResult = false; // те що поверне ShowDialog
         }
-
 
         #endregion
 

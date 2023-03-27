@@ -54,8 +54,6 @@ namespace ADO1.CRUDWindows
             if (NameView.Text == Product.Name)
             {
                 SaveButtonState = false;
-                SaveButton.Background = Brushes.Gray;
-                SaveButton.Foreground = Brushes.Black;
                 ErrorText.Text = "*The text field contains the original value";
                 inputWasChaged = false;
             }
@@ -65,16 +63,12 @@ namespace ADO1.CRUDWindows
                 if (!stringIsEmpty)
                 {
                     SaveButtonState = true;
-                    SaveButton.Background = Brushes.DarkGreen;
-                    SaveButton.Foreground = Brushes.White;
                 }
             }
 
             if (NameView.Text.Trim() == String.Empty || PriceView.Text.Trim() == String.Empty)
             {
                 SaveButtonState = false;
-                SaveButton.Background = Brushes.Gray;
-                SaveButton.Foreground = Brushes.Black;
                 ErrorText.Text = "*Field is empty or contains only spaces";
                 stringIsEmpty = true;
             }
@@ -84,8 +78,6 @@ namespace ADO1.CRUDWindows
                 if (inputWasChaged)
                 {
                     SaveButtonState = true;
-                    SaveButton.Background = Brushes.DarkGreen;
-                    SaveButton.Foreground = Brushes.White;
                 }
             }
         }

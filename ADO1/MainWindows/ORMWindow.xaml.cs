@@ -107,16 +107,12 @@ namespace ADO1
             SqlCommand cmd = new() { Connection = _connection };
             try
             {
-                cmd.CommandText = "SELECT D.Id, D.Name FROM Departments D";
+                cmd.CommandText = "SELECT * FROM Departments D WHERE D.DeleteDt IS NULL";
 
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    Departments.Add(new Entity.Department
-                    {
-                        Id = reader.GetGuid(0),
-                        Name = reader.GetString(1)
-                    });
+                    Departments.Add(new Entity.Department(reader));
                 }
                 reader.Close();
                 cmd.Dispose();
@@ -137,8 +133,7 @@ namespace ADO1
             SqlCommand cmd = new() { Connection = _connection };
             try
             {
-                cmd.CommandText = "SELECT P.Id, P.* FROM Products P WHERE P.DeleteDt IS NULL";
-
+                cmd.CommandText = "SELECT * FROM Products P WHERE P.DeleteDt IS NULL";
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -164,25 +159,11 @@ namespace ADO1
             SqlCommand cmd = new() { Connection = _connection };
             try
             {
-                cmd.CommandText = "SELECT M.Id, M.Surname, M.Name, M.Secname, M.Id_main_dep, M.Id_sec_dep, M.Id_chief  FROM Managers M";
+                cmd.CommandText = "SELECT * FROM Managers M WHERE M.DeleteDt IS NULL";
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    Managers.Add(new Entity.Manager
-                    {
-                        Id = reader.GetGuid(0),
-                        Surname = reader.GetString(1),
-                        Name = reader.GetString(2),
-                        Secname = reader.GetString(3),
-                        IdMainDep = reader.GetGuid(4),
-                        IdSecDep = reader.GetValue(5) == DBNull.Value
-                        ? null
-                            : reader.GetGuid(5),
-                        IdChief = reader.IsDBNull(6)
-                        ? null
-                            : reader.GetGuid(6)
-
-                    });
+                    Managers.Add(new Entity.Manager(reader));
                 }
                 reader.Close();
                 cmd.Dispose();
@@ -216,8 +197,9 @@ namespace ADO1
                         if (_dialogDepartment.Department is null) //Delete
                         {
                             string command =
-                                "DELETE FROM Departments " +
-                                 $"WHERE Id = @id; ";
+                               @"UPDATE Departments
+                                  SET DeleteDt = CURRENT_TIMESTAMP
+                                  WHERE Id = @id; ";
                             using SqlCommand cmd = new(command, _connection);
                             cmd.Parameters.AddWithValue("@id", department.Id);
                             ExecuteCommand(cmd, $"Delete: {department.Name}");
@@ -256,12 +238,15 @@ namespace ADO1
                     {
                         if (_dialogProduct.Product is null) //Delete
                         {
-                            //string command =
-                            //    "DELETE FROM Departments " +
-                            //     $"WHERE Id = '{department.Id}'; ";
-                            //ExecuteCommand(command, $"Delete: {department.Name}");
-                            //Departments.Clear();
-                            //LoadDepartments();
+                            string command =
+                                 @"UPDATE Products
+                                  SET DeleteDt = CURRENT_TIMESTAMP
+                                  WHERE Id = @id; ";
+                            using SqlCommand cmd = new(command, _connection);
+                            cmd.Parameters.AddWithValue("@id", product.Id);
+                            ExecuteCommand(cmd, $"Delete: {product.Name}");
+                            Products.Clear();
+                            LoadProducts();
                         }
                         else // Update
                         {
@@ -289,57 +274,59 @@ namespace ADO1
             {
                 if (item.Content is Entity.Manager manager)
                 {
-                    //ManagerCrudWindow dialog = new()
-                    //{
-                    //    Owner = this,
-                    //    Manager = manager
-                    //};
-                    //if (dialog.ShowDialog() == true)
-                    //{
-                    //    if (dialog.Manager is null) //Delete
-                    //    {
-                    //        //string command =
-                    //        //    "DELETE FROM Departments " +
-                    //        //     $"WHERE Id = '{department.Id}'; ";
-                    //        //ExecuteCommand(command, $"Delete: {department.Name}");
-                    //        //Departments.Clear();
-                    //        //LoadDepartments();
-                    //    }
-                    //    else // Update
-                    //    {
-                    //        string command =
-                    //            @"UPDATE Managers 
-                    //            SET 
-                    //            Surname = @surname,
-                    //            Name = @name, 
-                    //            Secname = @secname, 
-                    //            Id_main_dep = @IdMainDep, 
-                    //            Id_sec_dep = @IdSecDep, 
-                    //            Id_chief = @IdChief
-                    //            WHERE Id = @id;";
+                    ManagerCrudWindow dialog = new()
+                    {
+                        Owner = this,
+                        Manager = manager
+                    };
+                    if (dialog.ShowDialog() == true)
+                    {
+                        if (dialog.Manager is null) //Delete
+                        {
+                            string command =
+                                @"UPDATE Managers
+                                  SET DeleteDt = CURRENT_TIMESTAMP
+                                  WHERE Id = @id; ";
+                            using SqlCommand cmd = new(command, _connection);
+                            cmd.Parameters.AddWithValue("@id", manager.Id);
+                            ExecuteCommand(cmd, $"Delete: {manager.Name} {manager.Surname}");
+                            Managers.Clear();
+                            LoadManagers();
+                        }
+                        else // Update
+                        {
+                            string command =
+                                @"UPDATE Managers 
+                                SET 
+                                Surname = @surname,
+                                Name = @name, 
+                                Secname = @secname, 
+                                Id_main_dep = @IdMainDep, 
+                                Id_sec_dep = @IdSecDep, 
+                                Id_chief = @IdChief
+                                WHERE Id = @id;";
 
-                    //        using SqlCommand cmd = new(command, _connection);
-                    //        cmd.Parameters.AddWithValue("@id", manager.Id);
-                    //        cmd.Parameters.AddWithValue("@surname", manager.Surname);
-                    //        cmd.Parameters.AddWithValue("@name", manager.Name);
-                    //        cmd.Parameters.AddWithValue("@secname", manager.Secname);
-                    //        cmd.Parameters.AddWithValue("@IdMainDep", manager.IdMainDep);
-                    //        if (manager.IdSecDep != null)
-                    //            cmd.Parameters.AddWithValue("@IdSecDep", manager.IdSecDep);
-                    //        else
-                    //            cmd.Parameters.AddWithValue("@IdSecDep", DBNull.Value);
+                            using SqlCommand cmd = new(command, _connection);
+                            cmd.Parameters.AddWithValue("@id", manager.Id);
+                            cmd.Parameters.AddWithValue("@surname", manager.Surname);
+                            cmd.Parameters.AddWithValue("@name", manager.Name);
+                            cmd.Parameters.AddWithValue("@secname", manager.Secname);
+                            cmd.Parameters.AddWithValue("@IdMainDep", manager.IdMainDep);
+                            if (manager.IdSecDep != null)
+                                cmd.Parameters.AddWithValue("@IdSecDep", manager.IdSecDep);
+                            else
+                                cmd.Parameters.AddWithValue("@IdSecDep", DBNull.Value);
 
-                    //        if (manager.IdChief != null)
-                    //            cmd.Parameters.AddWithValue("@IdChief", manager.IdChief);
-                    //        else
-                    //            cmd.Parameters.AddWithValue("@IdChief", DBNull.Value);
+                            if (manager.IdChief != null)
+                                cmd.Parameters.AddWithValue("@IdChief", manager.IdChief);
+                            else
+                                cmd.Parameters.AddWithValue("@IdChief", DBNull.Value);
 
-                    //        ExecuteCommand(cmd, "Update Manager");
-                    //        Managers.Clear();
-                    //        LoadManagers();
-                    //    }
-                    //    MessageBox.Show(dialog.Manager.ToString());
-                    //}
+                            ExecuteCommand(cmd, "Update Manager");
+                            Managers.Clear();
+                            LoadManagers();
+                        }
+                    }
 
                 }
             }
@@ -401,41 +388,41 @@ namespace ADO1
 
         private void AddManagerButtoт_Click(object sender, RoutedEventArgs e)
         {
-            //ManagerCrudWindow dialog = new()
-            //{
-            //    Owner = this
-            //};
-            //if (dialog.ShowDialog() == true)
-            //{
-            //    if (dialog.Manager is not null)
-            //    {
-            //        string command =
-            //                   @"INSERT INTO Managers(Id, Surname, Name, Secname, Id_main_dep, Id_sec_dep, Id_chief) 
-            //                    VALUES( 
-            //                    @id, @surname, @name, @secname, @IdMainDep, @IdSecDep, @IdChief
-            //                    );";
+            ManagerCrudWindow dialog = new()
+            {
+                Owner = this
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                if (dialog.Manager is not null)
+                {
+                    string command =
+                               @"INSERT INTO Managers(Id, Surname, Name, Secname, Id_main_dep, Id_sec_dep, Id_chief) 
+                                VALUES( 
+                                @id, @surname, @name, @secname, @IdMainDep, @IdSecDep, @IdChief
+                                );";
 
-            //        using SqlCommand cmd = new(command, _connection);
-            //        cmd.Parameters.AddWithValue("@id", dialog.Manager.Id);
-            //        cmd.Parameters.AddWithValue("@surname", dialog.Manager.Surname);
-            //        cmd.Parameters.AddWithValue("@name", dialog.Manager.Name);
-            //        cmd.Parameters.AddWithValue("@secname", dialog.Manager.Secname);
-            //        cmd.Parameters.AddWithValue("@IdMainDep", dialog.Manager.IdMainDep);
-            //        if (dialog.Manager.IdSecDep != null)
-            //            cmd.Parameters.AddWithValue("@IdSecDep", dialog.Manager.IdSecDep);
-            //        else
-            //            cmd.Parameters.AddWithValue("@IdSecDep", DBNull.Value);
+                    using SqlCommand cmd = new(command, _connection);
+                    cmd.Parameters.AddWithValue("@id", dialog.Manager.Id);
+                    cmd.Parameters.AddWithValue("@surname", dialog.Manager.Surname);
+                    cmd.Parameters.AddWithValue("@name", dialog.Manager.Name);
+                    cmd.Parameters.AddWithValue("@secname", dialog.Manager.Secname);
+                    cmd.Parameters.AddWithValue("@IdMainDep", dialog.Manager.IdMainDep);
+                    if (dialog.Manager.IdSecDep != null)
+                        cmd.Parameters.AddWithValue("@IdSecDep", dialog.Manager.IdSecDep);
+                    else
+                        cmd.Parameters.AddWithValue("@IdSecDep", DBNull.Value);
 
-            //        if (dialog.Manager.IdChief != null)
-            //            cmd.Parameters.AddWithValue("@IdChief", dialog.Manager.IdChief);
-            //        else
-            //            cmd.Parameters.AddWithValue("@IdChief", DBNull.Value);
+                    if (dialog.Manager.IdChief != null)
+                        cmd.Parameters.AddWithValue("@IdChief", dialog.Manager.IdChief);
+                    else
+                        cmd.Parameters.AddWithValue("@IdChief", DBNull.Value);
 
-            //        ExecuteCommand(cmd, "Create Manager");
-            //        Managers.Clear();
-            //        LoadManagers();
-            //    }
-            //}
+                    ExecuteCommand(cmd, "Create Manager");
+                    Managers.Clear();
+                    LoadManagers();
+                }
+            }
         }
 
         #endregion
