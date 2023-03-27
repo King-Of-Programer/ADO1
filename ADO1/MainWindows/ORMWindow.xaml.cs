@@ -517,7 +517,7 @@ namespace ADO1
                     cmd.Parameters.AddWithValue("@quantity", dialog.Sale.Quantity);
                     cmd.Parameters.AddWithValue("@product_id", dialog.Sale.ProductId);
                     cmd.Parameters.AddWithValue("@manager_id", dialog.Sale.ManagerId);
-                    ExecuteCommand(cmd, "Create Manager");
+                    ExecuteCommand(cmd, "Create Sale");
                     Sales.Clear();
                     LoadSales();
                 }

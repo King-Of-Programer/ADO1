@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADO1.MainWindows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,6 +36,12 @@ namespace ADO1
         {
             this.Hide();
             new ORMWindow().ShowDialog();
+            this.Show();
+        }
+        private void DalButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            new DalWindow().ShowDialog();
             this.Show();
         }
     }

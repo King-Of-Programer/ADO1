@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADO1.DAL;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -34,5 +35,19 @@ namespace ADO1.Entity
         {
             return Id.ToString()[..5] + "..." + Name;
         }
+
+        //// Navigation Properties (INVERSE) ////
+
+        internal DataContext? dataContext;
+
+        public List<Entity.Manager>? MainManagers
+        {
+            get => dataContext?
+                .Managers
+                .GetAll()
+                .Where(m => m.IdMainDep == this.Id)
+                .ToList();
+        }
+
     }
 }

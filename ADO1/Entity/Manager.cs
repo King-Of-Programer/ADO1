@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADO1.DAL;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -52,5 +53,49 @@ namespace ADO1.Entity
         {
             return $"{Id.ToString()[..4]} {Surname} {Name} {Secname} {IdMainDep} {IdSecDep} {IdChief}";
         }
+
+        //// NAVIGATION PROPERTIES ////
+
+        internal DataContext? dataContext;
+
+        public Entity.Department? MainDep
+        {
+            get
+            {
+                return dataContext?
+                    .Departments
+                    .GetAll()
+                    .Find(d => d.Id == this.IdMainDep);
+            }
+        }
+        public Entity.Department? SecDep
+        {
+            get
+            {
+                return dataContext?
+                    .Departments
+                    .GetAll()
+                    .Find(d => d.Id == this.IdSecDep);
+            }
+        }
+        public Entity.Manager? Chief
+        {
+            get
+            {
+                return dataContext?
+                    .Managers
+                    .GetAll()
+                    .Find(m => m.Id == this.IdChief);
+            }
+        }
+        public List<Entity.Manager>? Subordinates
+        {
+            get => dataContext?
+                .Managers
+                .GetAll()
+                .Where(m => m.Id == this.IdChief)
+                .ToList();
+        }
+
     }
 }

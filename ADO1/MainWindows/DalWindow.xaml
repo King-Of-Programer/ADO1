@@ -1,0 +1,107 @@
+﻿<Window x:Class="ADO1.MainWindows.DalWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ADO1.MainWindows"
+        mc:Ignorable="d"
+        Title="DalWindow" Height="450" Width="800">
+    <Grid ShowGridLines="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Vertical"
+                    Grid.Row="0" Grid.Column="0">
+            <Label Content="Відділи" HorizontalAlignment="Center"
+                   FontSize="22" FontWeight="DemiBold"/>
+            <ListView ItemsSource="{Binding DepartmentsList}" 
+                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                      MaxHeight="140">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn
+                            Header="Id"
+                            DisplayMemberBinding="{Binding Path=Id}"/>
+                        <GridViewColumn
+                            Header="Name"
+                            DisplayMemberBinding="{Binding Path=Name}"/>
+                        <GridViewColumn
+                            Header="MainManagers"
+                            DisplayMemberBinding="{Binding Path=MainManagers.Count}"/>
+                    </GridView>
+                </ListView.View>
+                <ListView.Resources>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <EventSetter
+                            Event="MouseDoubleClick"
+                            Handler="DepartmentsItems_MouseDoubleClick"/>
+                    </Style>
+                </ListView.Resources>
+            </ListView>
+            <Button
+                x:Name="AddDepartmentButton"
+                Content="Новий відділ"
+                Margin="5"
+                Click="AddDepartmentButton_Click"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical"
+                    Grid.Row="0" Grid.Column="1">
+            <Label Content="Спвівробітники" HorizontalAlignment="Center"
+                   FontSize="22" FontWeight="DemiBold"/>
+            <ListView ItemsSource="{Binding ManagersList}" 
+                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                      MaxHeight="140">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn
+                            Header="Id"
+                            DisplayMemberBinding="{Binding Path=Id}"/>
+                        <GridViewColumn
+                            Header="Surname"
+                            DisplayMemberBinding="{Binding Path=Surname}"/>
+                        <GridViewColumn
+                            Header="Name"
+                            DisplayMemberBinding="{Binding Path=Name}"/>
+                        <GridViewColumn
+                            Header="Secname"
+                            DisplayMemberBinding="{Binding Path=Secname}"/>
+                        <GridViewColumn
+                            Header="MainDep"
+                            DisplayMemberBinding="{Binding Path=MainDep.Name}"/>
+                        <GridViewColumn
+                            Header="SecDep"
+                            DisplayMemberBinding="{Binding Path=SecDep.Name}"/>
+                        <GridViewColumn
+                            Header="Chief"
+                            DisplayMemberBinding="{Binding Path=Chief.Surname}"/>
+                        <GridViewColumn
+                            Header="Subordinates"
+                            DisplayMemberBinding="{Binding Path=Subordinates.Count}"/>
+                    </GridView>
+                </ListView.View>
+                <ListView.Resources>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <EventSetter
+                            Event="MouseDoubleClick"
+                            Handler="ManagersItems_MouseDoubleClick"/>
+                    </Style>
+                </ListView.Resources>
+            </ListView>
+            <Button
+                x:Name="AddManagerButton"
+                Content="Новий співробітник"
+                Margin="5"
+                Click="AddManagerButton_Click"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

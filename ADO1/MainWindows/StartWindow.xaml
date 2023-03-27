@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ADO1"
         mc:Ignorable="d"
-        Title="StartWindow" Height="450" Width="800">
+        Title="StartWindow" Height="450" Width="400"
+        WindowStartupLocation="CenterScreen">
     <StackPanel Orientation="Vertical">
         <TextBlock Text="ADO.NET"
                    FontSize="24"
@@ -19,5 +20,9 @@
                 Margin="20 10"
                 Padding="20 5"
                 Click="OrmButton_Click"/>
+        <Button x:Name="DalButton" Content="3. DAL, Data Context"
+                Margin="20 10"
+                Padding="20 5"
+                Click="DalButton_Click"/>
     </StackPanel>
 </Window>

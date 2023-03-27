@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADO1.Service;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -17,5 +18,6 @@ namespace ADO1
             Data Source=(LocalDB)\MSSQLLocalDB;
             AttachDbFilename=C:\Users\dsgnrr\Source\Repos\ADO1\ADO1\ado201bd.mdf;
             Integrated Security=True";
+        internal static readonly Logger Logger = new("log.txt");
     }
 }
