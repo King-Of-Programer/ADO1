@@ -77,6 +77,7 @@ namespace ADO1
                 @"CREATE TABLE Departments(
 	                Id			UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
 	                Name		NVARCHAR(50) NOT NULL
+                    DeleteDt    DATETIME
                 )";
 
             try//виконання команди
@@ -98,7 +99,8 @@ namespace ADO1
                 CREATE TABLE Products (
                 Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
                 Name NVARCHAR(50) NOT NULL,
-                Price FLOAT NOT NULL);";
+                Price FLOAT NOT NULL
+                DeleteDt DATETIME);";
 
             try
             {
@@ -130,7 +132,8 @@ namespace ADO1
 	            Secname		NVARCHAR(50) NOT NULL,
 	            Id_main_dep UNIQUEIDENTIFIER NOT NULL REFERENCES Departments( Id ),
 	            Id_sec_dep	UNIQUEIDENTIFIER REFERENCES Departments( Id ),
-	            Id_chief	UNIQUEIDENTIFIER);";
+	            Id_chief	UNIQUEIDENTIFIER
+                DeleteDt    DATETIME);";
 
             try
             {

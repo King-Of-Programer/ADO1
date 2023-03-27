@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ADO1"
         mc:Ignorable="d"
-         Loaded="Window_Loaded"
+       Loaded="Window_Loaded"
         Title="OrmWindow" Height="450" Width="800"
         WindowStartupLocation="CenterScreen">
     <Grid>
@@ -49,11 +49,12 @@
                 Margin="5"
                 Click="AddDepartmentButton_Click"/>
         </StackPanel>
+
         <StackPanel Orientation="Vertical"
                     Grid.Row="0" Grid.Column="1">
             <Label Content="Товари" HorizontalAlignment="Center"
                    FontSize="22" FontWeight="DemiBold"/>
-           
+
 
             <ListView ItemsSource="{Binding Products}"
                       ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -89,7 +90,7 @@
         </StackPanel>
 
         <StackPanel Orientation="Vertical"
-                    Grid.Row="1" Grid.ColumnSpan="2">
+                    Grid.Row="1" Grid.Column="0">
             <Label Content="Менеджери" HorizontalAlignment="Center"
                    FontSize="22" FontWeight="DemiBold"/>
             <ListView ItemsSource="{Binding Managers}" 
@@ -134,6 +135,42 @@
                 Content="Новий співробітник"
                 Margin="5"
                 Click="AddManagerButtoт_Click"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical"
+                    Grid.Row="1" Grid.Column="1">
+            <Label Content="Продажі" HorizontalAlignment="Center"
+                   FontSize="22" FontWeight="DemiBold"/>
+
+
+            <ListView ItemsSource="{Binding Sales}"
+                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                      MaxHeight="140">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn
+                            Header="Id"
+                            DisplayMemberBinding="{Binding Path=Id}"/>
+                        <GridViewColumn
+                            Header="SaleDt"
+                            DisplayMemberBinding="{Binding Path=SaleDate}"/>
+                        <GridViewColumn
+                            Header="Quantity"
+                            DisplayMemberBinding="{Binding Path=Quantity}"/>
+                    </GridView>
+                </ListView.View>
+                <ListView.Resources>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <EventSetter
+                            Event="MouseDoubleClick"
+                            Handler="SalesItem_MouseDoubleClick"/>
+                    </Style>
+                </ListView.Resources>
+            </ListView>
+            <Button Content="Новий продаж" Margin="5" 
+                        Click="AddSalesButton_Click"
+                        x:Name="AddSalesButton"/>
         </StackPanel>
     </Grid>
 </Window>

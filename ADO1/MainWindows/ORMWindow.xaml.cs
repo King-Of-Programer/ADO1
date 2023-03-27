@@ -28,6 +28,7 @@ namespace ADO1
         public ObservableCollection<Entity.Department> Departments { get; set; }
         public ObservableCollection<Entity.Product> Products { get; set; }
         public ObservableCollection<Entity.Manager> Managers { get; set; }
+        public ObservableCollection<Entity.Sale> Sales { get; set; }
 
         private SqlConnection _connection;
 
@@ -42,6 +43,7 @@ namespace ADO1
             Departments = new ObservableCollection<Entity.Department>();
             Products = new ObservableCollection<Entity.Product>();
             Managers = new ObservableCollection<Entity.Manager>();
+            Sales = new ObservableCollection<Sale>();
 
             DataContext = this;
 
@@ -56,6 +58,7 @@ namespace ADO1
             LoadDepartments();
             LoadManagers();
             LoadProducts();
+            LoadSales();
         }
 
         #region SQL_COMMANDS
@@ -164,6 +167,32 @@ namespace ADO1
                 while (reader.Read())
                 {
                     Managers.Add(new Entity.Manager(reader));
+                }
+                reader.Close();
+                cmd.Dispose();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Window will be closed",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                this.Close();
+            }
+        }
+
+        //ЗАВАНТАЖИТИ ПРОДАЖІ
+        private void LoadSales()
+        {
+            SqlCommand cmd = new() { Connection = _connection };
+            try
+            {
+                cmd.CommandText = "SELECT S.* FROM Sales S WHERE S.DeleteDt IS NULL";
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Sales.Add(new Entity.Sale(reader));
                 }
                 reader.Close();
                 cmd.Dispose();
@@ -331,6 +360,50 @@ namespace ADO1
                 }
             }
         }
+        private void SalesItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is ListViewItem item)
+            {
+                if (item.Content is Entity.Sale sale)
+                {
+                    SaleCrudWindow dialog = new() { Owner = this, Sale = sale };
+                    if (dialog.ShowDialog() == true)
+                    {
+                        if (dialog.Sale is null)
+                        {
+                            string command =
+                               @"UPDATE Sales
+                                  SET DeleteDt = CURRENT_TIMESTAMP
+                                  WHERE Id = @id; ";
+                            using SqlCommand cmd = new(command, _connection);
+                            cmd.Parameters.AddWithValue("@id", sale.Id);
+                            var product = Products.Where(p => p.Id == sale.ProductId).FirstOrDefault();
+                            ExecuteCommand(cmd, $"Delete sale info about: {product.Name}");
+                            Sales.Clear();
+                            LoadSales();
+                        }
+                        else
+                        {
+                            string command =
+                               @"UPDATE Sales
+                                 SET
+                                 Quantity = @quantity, 
+                                 Product_Id = @product_id,
+                                 Manager_Id = @manager_id 
+                                 WHERE Id = @id;";
+                            using SqlCommand cmd = new(command, _connection);
+                            cmd.Parameters.AddWithValue("@id", dialog.Sale.Id);
+                            cmd.Parameters.AddWithValue("@quantity", dialog.Sale.Quantity);
+                            cmd.Parameters.AddWithValue("@product_id", dialog.Sale.ProductId);
+                            cmd.Parameters.AddWithValue("@manager_id", dialog.Sale.ManagerId);
+                            ExecuteCommand(cmd, "Update Sale");
+                            Sales.Clear();
+                            LoadSales();
+                        }
+                    }
+                }
+            }
+        }
         #endregion
 
         #region CREATE_NEW_ROWS_DB
@@ -385,7 +458,6 @@ namespace ADO1
             }
         }
 
-
         private void AddManagerButtoт_Click(object sender, RoutedEventArgs e)
         {
             ManagerCrudWindow dialog = new()
@@ -423,6 +495,34 @@ namespace ADO1
                     LoadManagers();
                 }
             }
+        }
+
+        private void AddSalesButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaleCrudWindow dialog = new() { Owner = this, Sale = null };
+            //dialog.ShowDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                if (dialog.Sale is not null)
+                {
+                    string command =
+                               @"INSERT INTO Sales(Id, SaleDate, Quantity, Product_Id, Manager_Id) 
+                                VALUES( 
+                                @id, @saledate, @quantity, @product_id, @manager_id
+                                );";
+
+                    using SqlCommand cmd = new(command, _connection);
+                    cmd.Parameters.AddWithValue("@id", dialog.Sale.Id);
+                    cmd.Parameters.AddWithValue("@saledate", dialog.Sale.SaleDate);
+                    cmd.Parameters.AddWithValue("@quantity", dialog.Sale.Quantity);
+                    cmd.Parameters.AddWithValue("@product_id", dialog.Sale.ProductId);
+                    cmd.Parameters.AddWithValue("@manager_id", dialog.Sale.ManagerId);
+                    ExecuteCommand(cmd, "Create Manager");
+                    Sales.Clear();
+                    LoadSales();
+                }
+            }
+
         }
 
         #endregion

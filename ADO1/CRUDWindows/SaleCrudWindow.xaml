@@ -1,0 +1,225 @@
+﻿<Window x:Class="ADO1.CRUDWindows.SaleCrudWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ADO1.CRUDWindows"
+        mc:Ignorable="d"
+        Title="SaleCrudWindow" Height="310" Width="400"
+        Loaded="Window_Loaded"
+        Closed="Window_Closed"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.15*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            x:Name="WindowName"
+            TextAlignment="Center"
+            FontSize="20"
+            Margin="5"
+            Text="EDIT SALE"
+            FontWeight="Bold"/>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+
+            <!--ID-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.35*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Text="Id:"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    TextAlignment="Left"
+                    Margin="5"
+                    Grid.Column="0"/>
+
+                <TextBox
+                    x:Name="IdView"
+                    IsEnabled="false"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    Margin="5"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"/>
+            </Grid>
+
+            <!--SALE_DATE-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.35*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Text="Sale Date:"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    TextAlignment="Left"
+                    Margin="5"/>
+
+                <TextBox
+                    x:Name="SaleDateView"
+                    IsEnabled="False"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    Margin="5"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"/>
+            </Grid>
+
+            <!--PRODUCTS-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.35*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Text="Products:"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    TextAlignment="Left"
+                    Margin="5"/>
+
+                <ComboBox
+                    x:Name="ProductsComboBox"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    Margin="5"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    ItemsSource="{Binding Products}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Name}"/>
+                                <TextBlock Text=" "/>
+                                <TextBlock Text="{Binding Path=Price}"/>
+                                <TextBlock Text=" grn."/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+            </Grid>
+
+            <!--Quantity-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.35*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Text="Quantity:"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    TextAlignment="Left"
+                    Margin="5"/>
+
+                <TextBox
+                    x:Name="QuantityView"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    Margin="5"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"/>
+
+            </Grid>
+
+            <!--PRODUCTS-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.35*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Text="Manager:"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    TextAlignment="Left"
+                    Margin="5"/>
+
+                <ComboBox
+                    x:Name="ManagerComboBox"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    Margin="5"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    ItemsSource="{Binding Managers}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Surname}"/>
+                                <TextBlock Text=" "/>
+                                <TextBlock Text="{Binding Path=Name}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+            </Grid>
+
+            <!--ErrorMessage-->
+            <TextBlock
+                x:Name="ErrorText"
+                Visibility="Visible"
+                TextAlignment="Left"
+                FontSize="13"
+                Margin="5"
+                Foreground="Red"
+                Text="*ERROR_TEXT"
+                FontWeight="DemiBold"/>
+
+            <!--BUTTONS-->
+            <Grid Margin="5" x:Name="CrudButtons">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button
+                    x:Name="SaveButton"
+                    Content="Save"
+                        MouseEnter="SaveButton_MouseEnter"
+                        MouseLeave="SaveButton_MouseLeave"
+                        FontSize="15"
+                        Grid.Column="0"
+                        Margin="5"
+                        Click="SaveButton_Click"/>
+
+                <Button Content="Delete"
+                        x:Name="DeleteButton"
+                        FontSize="15"
+                        Grid.Column="1"
+                        Margin="5"
+                        Click="DeleteButton_Click"/>
+
+                <Button Content="Cancel"
+                        x:Name="CancelButton"
+                        FontSize="15"
+                        Grid.Column="2"
+                        Margin="5"
+                        Click="CancelButton_Click"/>
+
+            </Grid>
+
+        </StackPanel>
+
+    </Grid>
+</Window>
