@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADO1.Entity;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -14,12 +15,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace ADO1
+namespace ADO1.CRUDWindows
 {
     /// <summary>
-    /// Interaction logic for ProductCudWindow.xaml
+    /// Логика взаимодействия для ProductCrudWindow.xaml
     /// </summary>
-    public partial class ProductCudWindow : Window
+    /// 
+    public partial class ProductCrudWindow : Window
     {
         public Entity.Product Product { get; set; }
 
@@ -28,7 +30,7 @@ namespace ADO1
         private bool stringIsEmpty;
         private DispatcherTimer timer;
 
-        public ProductCudWindow()
+        public ProductCrudWindow()
         {
             InitializeComponent();
             Product = null;
@@ -68,7 +70,7 @@ namespace ADO1
                 }
             }
 
-            if (NameView.Text.Trim() == String.Empty || Price.Text.Trim() == String.Empty)
+            if (NameView.Text.Trim() == String.Empty || PriceView.Text.Trim() == String.Empty)
             {
                 SaveButtonState = false;
                 SaveButton.Background = Brushes.Gray;
@@ -87,31 +89,37 @@ namespace ADO1
                 }
             }
         }
-
-
         #endregion
 
+        #region WINDOW_EVENTS
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (Product is null)  // режим додавання (Create)
             {
                 Product = new() { Id = Guid.NewGuid() };
-                DeleteButton.Visibility = Visibility.Collapsed;
+
+                WindowName.Text = "CREATE PRODUCT";
+                CrudButtons.ColumnDefinitions.RemoveAt(1);
+                CrudButtons.Children.Remove(DeleteButton);
+
             }
             else // режим редагування чи видалення (Update or Delete)
             {
 
                 NameView.Text = Product.Name;
-                Price.Text = Product.Price.ToString();
+                PriceView.Text = Product.Price.ToString();
                 DeleteButton.IsEnabled = true;
             }
             IdView.Text = Product.Id.ToString();
         }
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            timer.Stop();
+        }
 
+        #endregion
 
-
-
-
+        #region BUTTONS_EVENTS
         private void SaveButton_MouseEnter(object sender, MouseEventArgs e)
         {
             if (!SaveButtonState)
@@ -135,7 +143,7 @@ namespace ADO1
                 try
                 {
                     Product.Price = double.Parse(
-                        Price.Text.Replace(',', '.'),
+                        PriceView.Text.Replace(',', '.'),
                         CultureInfo.InvariantCulture);
                 }
                 catch
@@ -149,8 +157,16 @@ namespace ADO1
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            Product = null;
-            this.DialogResult = false;
+            var result = MessageBox.Show(
+                 $"Do you really want to remove: {Product.Name}",
+                 "Delete field",
+                 MessageBoxButton.YesNo,
+                 MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                Product = null;
+                this.DialogResult = true;
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -158,6 +174,7 @@ namespace ADO1
             this.DialogResult = false; // те що поверне ShowDialog
         }
 
+        #endregion
     }
-}
 
+}

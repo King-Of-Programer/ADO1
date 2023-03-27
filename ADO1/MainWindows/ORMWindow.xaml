@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ADO1"
         mc:Ignorable="d"
-        Loaded="Window_Loaded"
-        Title="ORMWindow" Height="450" Width="800"
+         Loaded="Window_Loaded"
+        Title="OrmWindow" Height="450" Width="800"
         WindowStartupLocation="CenterScreen">
-    <Grid ShowGridLines="True">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -23,7 +23,7 @@
                    FontSize="22" FontWeight="DemiBold"/>
             <ListView ItemsSource="{Binding Departments}" 
                       ScrollViewer.VerticalScrollBarVisibility="Visible"
-                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                       MaxHeight="140">
                 <ListView.View>
                     <GridView>
@@ -44,18 +44,20 @@
                 </ListView.Resources>
             </ListView>
             <Button
-                x:Name="newDepartmentButton"
+                x:Name="AddDepartmentButton"
                 Content="Новий відділ"
                 Margin="5"
-                Click="newDepartmentButton_Click"/>
+                Click="AddDepartmentButton_Click"/>
         </StackPanel>
         <StackPanel Orientation="Vertical"
                     Grid.Row="0" Grid.Column="1">
             <Label Content="Товари" HorizontalAlignment="Center"
                    FontSize="22" FontWeight="DemiBold"/>
+           
+
             <ListView ItemsSource="{Binding Products}"
-                       ScrollViewer.VerticalScrollBarVisibility="Visible"
-                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                       MaxHeight="140">
                 <ListView.View>
                     <GridView>
@@ -68,6 +70,9 @@
                         <GridViewColumn
                             Header="Price"
                             DisplayMemberBinding="{Binding Path=Price}"/>
+                        <GridViewColumn
+                            Header="Del"
+                            DisplayMemberBinding="{Binding Path=DeleteDt}"/>
                     </GridView>
                 </ListView.View>
                 <ListView.Resources>
@@ -78,21 +83,19 @@
                     </Style>
                 </ListView.Resources>
             </ListView>
-            <Button
-                x:Name="newProductButton"
-                Content="Новий продукт"
-                Margin="5"
-                 Click="newProductButton_Click"
-                />
+            <Button Content="Новий товар" Margin="5" 
+                        Click="AddProductButton_Click"
+                        x:Name="AddProductButton"/>
         </StackPanel>
+
         <StackPanel Orientation="Vertical"
-                    Grid.Row="1" Grid.Column="0">
+                    Grid.Row="1" Grid.ColumnSpan="2">
             <Label Content="Менеджери" HorizontalAlignment="Center"
                    FontSize="22" FontWeight="DemiBold"/>
             <ListView ItemsSource="{Binding Managers}" 
                       ScrollViewer.VerticalScrollBarVisibility="Visible"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                      MaxHeight="175">
+                      MaxHeight="140">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn
@@ -107,6 +110,15 @@
                         <GridViewColumn
                             Header="Secname"
                             DisplayMemberBinding="{Binding Path=Secname}"/>
+                        <GridViewColumn
+                            Header="IdMainDep"
+                            DisplayMemberBinding="{Binding Path=IdMainDep}"/>
+                        <GridViewColumn
+                            Header="IdSecDep"
+                            DisplayMemberBinding="{Binding Path=IdSecDep}"/>
+                        <GridViewColumn
+                            Header="IdChief"
+                            DisplayMemberBinding="{Binding Path=IdChief}"/>
                     </GridView>
                 </ListView.View>
                 <ListView.Resources>
@@ -117,6 +129,11 @@
                     </Style>
                 </ListView.Resources>
             </ListView>
+            <Button
+                x:Name="AddManagerButtoт"
+                Content="Новий співробітник"
+                Margin="5"
+                Click="AddManagerButtoт_Click"/>
         </StackPanel>
     </Grid>
 </Window>

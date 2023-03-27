@@ -1,24 +1,27 @@
-﻿<Window x:Class="ADO1.ProductCudWindow"
+﻿<Window x:Class="ADO1.CRUDWindows.ProductCrudWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ADO1"
+        xmlns:local="clr-namespace:ADO1.CRUDWindows"
         mc:Ignorable="d"
+        Title="ProductCrudWindow" Height="250" Width="400"
+        Background="#1f1f1f"
         Loaded="Window_Loaded"
-        WindowStartupLocation="CenterScreen"
-        Title="ProductCudWindow" Height="200" Width="400">
+        Closed="Window_Closed"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.3*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <TextBlock
+            x:Name="WindowName"
             TextAlignment="Center"
             FontSize="20"
             Margin="5"
             Foreground="White"
-            Text="EDIT DEPARTMENTS"
+            Text="EDIT PRODUCT"
             FontWeight="Bold"/>
         <StackPanel Orientation="Vertical" Grid.Row="1">
             <!--ID-->
@@ -29,7 +32,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock
                     Text="Id:"
-                    Foreground="Black"
+                    Foreground="White"
                     FontSize="15"
                     FontWeight="DemiBold"
                     TextAlignment="Left"
@@ -54,7 +57,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock
                     Text="Name:"
-                    Foreground="Black"
+                    Foreground="White"
                     FontSize="15"
                     FontWeight="DemiBold"
                     TextAlignment="Left"
@@ -68,22 +71,29 @@
                     FontWeight="DemiBold"
                     Margin="5"
                     Grid.Column="1"/>
+            </Grid>
+            <!--PriceView-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.2*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Text="Price:"
+                    Foreground="White"
+                    FontSize="15"
+                    FontWeight="DemiBold"
+                    TextAlignment="Left"
+                    Margin="5"/>
                 <TextBox
-                    x:Name="Price"
+                    x:Name="PriceView"
                     Background="#696969"
                     BorderThickness="0"
                     Foreground="White"
                     FontSize="15"
                     FontWeight="DemiBold"
-                    Margin="5,34,5,-24"
+                    Margin="5"
                     Grid.Column="1"/>
-                <TextBlock
-                    Text="Price:"
-                    Foreground="Black"
-                    FontSize="15"
-                    FontWeight="DemiBold"
-                    TextAlignment="Left"
-                    Margin="5,34,5,-24"/>
             </Grid>
             <!--ErrorMessage-->
             <TextBlock
@@ -96,7 +106,7 @@
                 Text="*Test Error"
                 FontWeight="DemiBold"/>
             <!--BUTTONS-->
-            <Grid Margin="5">
+            <Grid Margin="5" x:Name="CrudButtons">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -104,9 +114,11 @@
                 </Grid.ColumnDefinitions>
                 <Button
                     x:Name="SaveButton"
-                    Content="Save"  
+                    Content="Save"
+                        Background="DarkGreen"
                         MouseEnter="SaveButton_MouseEnter"
                         MouseLeave="SaveButton_MouseLeave"
+                        Foreground="White"
                         FontSize="15"
                         BorderThickness="0"
                         Grid.Column="0"
@@ -115,7 +127,8 @@
 
                 <Button Content="Delete"
                         x:Name="DeleteButton"
-                        
+                        Background="Orange"
+                        Foreground="White"
                         FontSize="15"
                         BorderThickness="0"
                         Grid.Column="1"
@@ -124,9 +137,9 @@
 
                 <Button Content="Cancel"
                         x:Name="CancelButton"
-                        
+                        Background="DarkRed"
                         FontSize="15"
-                        
+                        Foreground="White"
                         BorderThickness="0"
                         Grid.Column="2"
                         Margin="5"

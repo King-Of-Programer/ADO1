@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ADO1.Entity
 {
-    public class Managers
+    public class Manager
     {
         public Guid Id { get; set; }
         public String Surname { get; set; }
