@@ -24,5 +24,9 @@
                 Margin="20 10"
                 Padding="20 5"
                 Click="DalButton_Click"/>
+        <Button x:Name="EFButton" Content="4. Entity Framework Core"
+                Margin="20 10"
+                Padding="20 5"
+                Click="EFButton_Click"/>
     </StackPanel>
 </Window>

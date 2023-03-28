@@ -44,6 +44,12 @@ namespace ADO1
             new DalWindow().ShowDialog();
             this.Show();
         }
+        private void EFButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            new EFWindow().ShowDialog();
+            this.Show();
+        }
     }
 }
 
