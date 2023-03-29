@@ -102,7 +102,6 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
-                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 
                 <Label Grid.Row="0" Grid.Column="0"
@@ -120,10 +119,10 @@
                        FontSize="18"/>
 
                 <Label Grid.Row="2" Grid.Column="0"
-                       Content="Best pcs:"
+                       Content="Max check count:"
                        FontSize="18"/>
                 <Label Grid.Row="2" Grid.Column="1"
-                       x:Name="BestPcs"
+                       x:Name="MaxCheckCnt"
                        FontSize="18"/>
 
                 <Label Grid.Row="3" Grid.Column="0"
@@ -140,24 +139,19 @@
                        x:Name="FinishMoment"
                        FontSize="18"/>
                 
-                <Label Grid.Row="5" Grid.Column="0"
-                       Content="Max check count:"
-                       FontSize="18"/>
-                <Label Grid.Row="5" Grid.Column="1"
-                       x:Name="MaxCheckCnt"
-                       FontSize="18"/>
                 
-                <Label Grid.Row="6" Grid.Column="0"
+                
+                <Label Grid.Row="5" Grid.Column="0"
                        Content="Average pcs:"
                        FontSize="18"/>
-                <Label Grid.Row="6" Grid.Column="1"
+                <Label Grid.Row="5" Grid.Column="1"
                        x:Name="AvgCheckCnt"
                        FontSize="18"/>
 
-                <Label Grid.Row="7" Grid.Column="0"
+                <Label Grid.Row="6" Grid.Column="0"
                        Content="Deleted check count:"
                        FontSize="16"/>
-                <Label Grid.Row="7" Grid.Column="1"
+                <Label Grid.Row="6" Grid.Column="1"
                        x:Name="DeletedCheckCnt"
                        FontSize="18"/>
 

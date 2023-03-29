@@ -45,6 +45,7 @@ namespace ADO1.MainWindows
             depListView.Filter = //Predicate<object>
                 obj => (obj as Department)?.DeleteDt == null;
             UpdateMonitor();
+            UpdateDailyStatistics();
         }
 
         public void UpdateMonitor()
@@ -65,20 +66,22 @@ namespace ADO1.MainWindows
         {
             // Статистика продажів за сьогодні:
             // загалом продажів (чеків, записів у Sales) за сьогодні (усіх, у т.ч. видалених)
-            SalesChecks.Content = "0";
+            SalesChecks.Content = efContext.Sales.Count();
             // загальна кількість проданих товарів (сума)
-            SalesCnt.Content = "0";
+            SalesCnt.Content = efContext.Sales.Sum(s => s.Quantity);
             // фактичний час старту продажів сьогодні
-            StartMoment.Content = "00:00:00";
+            DateTime time = efContext.Sales.Min(s => s.SaleDate);
+            StartMoment.Content = $"{time.Hour}:{time.Minute}:{time.Second}";
             // час останнього продажу
-            FinishMoment.Content = "00:00:00";
+            time = efContext.Sales.Max(s => s.SaleDate);
+            FinishMoment.Content = $"{time.Hour}:{time.Minute}:{time.Second}";
             // максимальна кількість товарів у одному чеку (за сьогодні)
-            MaxCheckCnt.Content = "0";
+            MaxCheckCnt.Content = efContext.Sales.Max(s => s.Quantity); ;
             // "середній чек" за кількістю - середнє значення кількості 
             //  проданих товарів на один чек
-            AvgCheckCnt.Content = "0.0";
+            AvgCheckCnt.Content = efContext.Sales.Average(s=>s.Quantity);
             // Повернення - чеки, що є видаленими (кількість чеків за сьогодні)
-            DeletedCheckCnt.Content = "0";
+            DeletedCheckCnt.Content = efContext.Sales.Where(s => s.DeleteDt != null).Count();
         }
 
         private void AddDepartmentButton_Click(object sender, RoutedEventArgs e)
