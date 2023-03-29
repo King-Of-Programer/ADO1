@@ -24,6 +24,9 @@ namespace ADO1.MainWindows
     {
         internal EfContext efContext { get; set; } = new();
         private ICollectionView depListView;
+
+        private static readonly Random random = new Random();
+
         public EFWindow()
         {
             InitializeComponent();
@@ -32,7 +35,6 @@ namespace ADO1.MainWindows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
             efContext.Departments.Load();
             depList.ItemsSource = efContext
                 .Departments
@@ -59,6 +61,25 @@ namespace ADO1.MainWindows
 
         }
 
+        private void UpdateDailyStatistics()
+        {
+            // Статистика продажів за сьогодні:
+            // загалом продажів (чеків, записів у Sales) за сьогодні (усіх, у т.ч. видалених)
+            SalesChecks.Content = "0";
+            // загальна кількість проданих товарів (сума)
+            SalesCnt.Content = "0";
+            // фактичний час старту продажів сьогодні
+            StartMoment.Content = "00:00:00";
+            // час останнього продажу
+            FinishMoment.Content = "00:00:00";
+            // максимальна кількість товарів у одному чеку (за сьогодні)
+            MaxCheckCnt.Content = "0";
+            // "середній чек" за кількістю - середнє значення кількості 
+            //  проданих товарів на один чек
+            AvgCheckCnt.Content = "0.0";
+            // Повернення - чеки, що є видаленими (кількість чеків за сьогодні)
+            DeletedCheckCnt.Content = "0";
+        }
 
         private void AddDepartmentButton_Click(object sender, RoutedEventArgs e)
         {
@@ -138,6 +159,42 @@ namespace ADO1.MainWindows
             //    obj => (obj as Department)?.DeleteDt == null;
             depListView.Filter = DepartmentsDeletedFilter;
             ((GridView)depList.View).Columns[2].Width = 0;
+        }
+
+        private void GenerateSalesButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Manager manager = - отримання .ToList() передає всі дані, для BigData неприйнятно
+            // Manager manager = efContext.Managers.ToList()[random.Next(efContext.Managers.Count())];  //Випадковий менеджер з наявних
+
+            // Manager manager = // System.InvalidOperationException - Linq to Entity перекладає запит на SQL
+            // efContext.Managers.ElementAt(random.Next(efContext.Managers.Count())); // Не всі можливості С# мають аналоги у SQL
+
+            // DbSet приймає метод розширення LINQ, але не всі вони врешті спрацюють, оскільки
+            // це Linq-to-Entity (LINQ-to-SQL), що накладає певні обмеження
+            double maxPrice = efContext.Products.Max(p => p.Price);
+            int manCnt = random.Next(efContext.Managers.Count());
+            int proCnt = random.Next(efContext.Products.Count());
+            for (int i = 0; i < 100; i++)
+            {
+                //Випадковий менеджер з наявних
+                Manager manager = efContext.Managers.Skip(manCnt).First(); 
+                //Віипадковий продукт                                                        
+                Product product = efContext.Products.Skip(proCnt).First();
+                //Випадкова кількість, але чим дорожче товар, тим менша кількість
+                int quantity = random.Next(1,
+                    (int)(20 * (1 - product.Price / maxPrice) + 2));
+                efContext.Sales.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    ManagerId = manager.Id,
+                    ProductId = product.Id,
+                    Quantity = quantity,
+                    //Дата "сьогодні" але з випадковим часом
+                    SaleDate = DateTime.Today.AddSeconds(random.Next(86400))
+                });
+            }
+            efContext.SaveChanges();
+            UpdateMonitor();
         }
     }
 }
