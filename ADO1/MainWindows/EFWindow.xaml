@@ -158,5 +158,42 @@
             </Grid>
         </StackPanel>
 
+        <StackPanel Orientation="Vertical"
+                    Grid.Row="1"
+                    Grid.Column="1">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <Label Content="Daily statistics(Continue)"
+                   HorizontalAlignment="Center"
+                   FontSize="18"/>
+            </StackPanel>
+            <Separator/>
+            <Grid ShowGridLines="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="Best Product:"
+                       FontSize="18"/>
+                <Label Grid.Row="0" Grid.Column="1"
+                       x:Name="BestProduct"
+                       FontSize="18"/>
+            </Grid>
+        </StackPanel>
+
+        <TextBlock
+            Grid.Row="1"
+            Grid.Column="2"
+            x:Name="LogBlock"/>
     </Grid>
 </Window>

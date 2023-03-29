@@ -5,29 +5,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ADO1.EFCore
+namespace ADO1.EfCore
 {
     public class EfContext : DbContext
     {
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<Manager> Managers { get; set; }
-        public DbSet<Sale> Sales { get; set; }
+        internal DbSet<Department> Departments { get; set; }
+        internal DbSet<Product> Products { get; set; }
+        internal DbSet<Manager> Managers { get; set; }
+        internal DbSet<Sale> Sales { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // налагодження підключення до СУБДЛ
-            optionsBuilder.UseSqlServer(// UseSqlServer -- extension з Microsoft.EntityFramework
-                                        // означає роботу з MS SQL Server / LocalDB
-          @"Data Source=(LocalDB)\MSSQLLocalDB;
-            Initial Catalog=ef1ado;
-            Integrated Security=True");
+            // налагодження підключення до СУБД
+            optionsBuilder.UseSqlServer( //UseSqlServer - extension з Microsoft.EntityFrameworkCore
+                                         // означає роботу з MS Sql / LocalDB
+                @"                       
+                Data Source=(LocalDB)\MSSQLLocalDB;
+                Initial Catalog=ef2ado;
+                Integrated Security=True");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // налагодження самої БД
-            // сідування (seed, seeding) -- заповнення початковими даними
+            // сідування (seed, seeding) - заповнення початковими даними
             SeedDepartments(modelBuilder);
             SeedProducts(modelBuilder);
             SeedManagers(modelBuilder);
@@ -67,7 +68,6 @@ namespace ADO1.EFCore
             modelBuilder.Entity<Product>().HasData(new Product { Id = Guid.Parse("17DB11D1-F50E-4CF4-9C54-CF1BD45802EA"), Name = "Электроды 3мм", Price = 49.98 });
             modelBuilder.Entity<Product>().HasData(new Product { Id = Guid.Parse("7264D33A-16B9-4E22-B3F1-63D6DAE60078"), Name = "Паяльник 40 Вт", Price = 199.98 });
         }
-
         private void SeedManagers(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Manager>().HasData(new Manager { Id = Guid.Parse("743C93F2-4717-4E81-A093-69903476E176"), Surname = "Носков", Name = "Орест", Secname = "Ярославович", IdMainDep = Guid.Parse("131EF84B-F06E-494B-848F-BB4BC0604266"), IdSecDep = null, IdChief = null });
@@ -133,5 +133,4 @@ namespace ADO1.EFCore
         }
         #endregion
     }
-
 }

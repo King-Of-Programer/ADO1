@@ -1,8 +1,11 @@
-﻿using ADO1.EFCore;
+﻿using ADO1.EfCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +25,7 @@ namespace ADO1.MainWindows
     /// </summary>
     public partial class EFWindow : Window
     {
-        internal EfContext efContext { get; set; } = new();
+        public EfContext efContext { get; set; } = new();
         private ICollectionView depListView;
 
         private static readonly Random random = new Random();
@@ -30,7 +33,6 @@ namespace ADO1.MainWindows
         public EFWindow()
         {
             InitializeComponent();
-            this.DataContext = efContext;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -70,18 +72,25 @@ namespace ADO1.MainWindows
             // загальна кількість проданих товарів (сума)
             SalesCnt.Content = efContext.Sales.Sum(s => s.Quantity);
             // фактичний час старту продажів сьогодні
-            DateTime time = efContext.Sales.Min(s => s.SaleDate);
+            DateTime time = efContext.Sales.Min(s => s.SaleDt);
             StartMoment.Content = $"{time.Hour}:{time.Minute}:{time.Second}";
             // час останнього продажу
-            time = efContext.Sales.Max(s => s.SaleDate);
+            time = efContext.Sales.Max(s => s.SaleDt);
             FinishMoment.Content = $"{time.Hour}:{time.Minute}:{time.Second}";
             // максимальна кількість товарів у одному чеку (за сьогодні)
             MaxCheckCnt.Content = efContext.Sales.Max(s => s.Quantity); ;
             // "середній чек" за кількістю - середнє значення кількості 
             //  проданих товарів на один чек
-            AvgCheckCnt.Content = efContext.Sales.Average(s=>s.Quantity);
+            AvgCheckCnt.Content = efContext.Sales.Average(s => s.Quantity);
             // Повернення - чеки, що є видаленими (кількість чеків за сьогодні)
-            DeletedCheckCnt.Content = efContext.Sales.Where(s => s.DeleteDt != null && s.SaleDate == DateTime.Today).Count();
+            DeletedCheckCnt.Content = efContext.Sales.Where(s => s.DeleteDt != null && s.SaleDt == DateTime.Today).Count();
+
+            var query = efContext.Sales
+                .GroupBy(s => s.ProductId);// групування за s.ProductId
+            foreach (IGrouping<Guid,Sale> grp in query)
+            {
+                LogBlock.Text += grp.Key.ToString() + '\n';// Guid - s.ProductId
+            }
         }
 
         private void AddDepartmentButton_Click(object sender, RoutedEventArgs e)
@@ -166,38 +175,39 @@ namespace ADO1.MainWindows
 
         private void GenerateSalesButton_Click(object sender, RoutedEventArgs e)
         {
-            // Manager manager = - отримання .ToList() передає всі дані, для BigData неприйнятно
-            // Manager manager = efContext.Managers.ToList()[random.Next(efContext.Managers.Count())];  //Випадковий менеджер з наявних
+            // Випадковий менеджер з наявних
+            // Manager manager =  // "-" отримання .ToList() передає всі дані, для BigData неприйнятно
+            //    efContext.Managers.ToList()[random.Next(efContext.Managers.Count())];
+            // Manager manager = // System.InvalidOperationException - LINQ-to-Entity перекладає запит на SQL. Не всі 
+            //    efContext.Managers.ElementAt(random.Next(efContext.Managers.Count())); // можливості мови C# мають аналоги у SQL
+            // DbSet приймає методи розширення LINQ, але не всі вони врешті спрацьовують, оскільки
+            //    це LINQ-to-Entity (LINQ-to-SQL), що накладає певні обмеження
 
-            // Manager manager = // System.InvalidOperationException - Linq to Entity перекладає запит на SQL
-            // efContext.Managers.ElementAt(random.Next(efContext.Managers.Count())); // Не всі можливості С# мають аналоги у SQL
-
-            // DbSet приймає метод розширення LINQ, але не всі вони врешті спрацюють, оскільки
-            // це Linq-to-Entity (LINQ-to-SQL), що накладає певні обмеження
             double maxPrice = efContext.Products.Max(p => p.Price);
-            int manCnt = random.Next(efContext.Managers.Count());
-            int proCnt = random.Next(efContext.Products.Count());
+            int manCnt = efContext.Managers.Count();
+            int proCnt = efContext.Products.Count();
+
             for (int i = 0; i < 100; i++)
             {
-                //Випадковий менеджер з наявних
-                Manager manager = efContext.Managers.Skip(manCnt).First(); 
-                //Віипадковий продукт                                                        
-                Product product = efContext.Products.Skip(proCnt).First();
-                //Випадкова кількість, але чим дорожче товар, тим менша кількість
+                Manager manager = efContext.Managers.Skip(random.Next(manCnt)).First();
+                // Випадковий товар
+                Product product = efContext.Products.Skip(random.Next(proCnt)).First();
+                // Випадкова кількість, але чим дорожче товар, тим менша гранична кількість
                 int quantity = random.Next(1,
                     (int)(20 * (1 - product.Price / maxPrice) + 2));
+
                 efContext.Sales.Add(new()
                 {
                     Id = Guid.NewGuid(),
                     ManagerId = manager.Id,
                     ProductId = product.Id,
                     Quantity = quantity,
-                    //Дата "сьогодні" але з випадковим часом
-                    SaleDate = DateTime.Today.AddSeconds(random.Next(86400))
+                    SaleDt = DateTime.Today.AddSeconds(random.Next(0, 86400))  // Дата "сьогодні" але з випадковим часом
                 });
             }
             efContext.SaveChanges();
             UpdateMonitor();
+            UpdateDailyStatistics();
         }
     }
 }
