@@ -81,7 +81,7 @@ namespace ADO1.MainWindows
             //  проданих товарів на один чек
             AvgCheckCnt.Content = efContext.Sales.Average(s=>s.Quantity);
             // Повернення - чеки, що є видаленими (кількість чеків за сьогодні)
-            DeletedCheckCnt.Content = efContext.Sales.Where(s => s.DeleteDt != null).Count();
+            DeletedCheckCnt.Content = efContext.Sales.Where(s => s.DeleteDt != null && s.SaleDate == DateTime.Today).Count();
         }
 
         private void AddDepartmentButton_Click(object sender, RoutedEventArgs e)
