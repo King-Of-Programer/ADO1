@@ -94,6 +94,7 @@ namespace ADO1.MainWindows
             ///////////////////////////////////////////////////////////
             ///
 
+            #region BadQuery
             //var query = efContext.Sales
             //    .Where(s=>s.SaleDt.Date==DateTime.Today)
             //    .GroupBy(s => s.ProductId);// групування за s.ProductId
@@ -124,9 +125,16 @@ namespace ADO1.MainWindows
             //{
             //    LogBlock.Text += $"{item.Name} -- {item.Cnt}\n";
             //}
+            #endregion
 
-            var query3 = efContext.Products
-               //.Where(s => s.SaleDt.Date == DateTime.Today)
+            /* Д.З. Написати запити для визначення кращого товару
+             * а) за кількістю чеків (класна робота)
+             * б) за кількістю проданих шт
+             * в) за сумою продажів 
+             * Разом з назвою вивести також числову хар-ку (шт/грн)
+             */
+            #region ChecksCount
+            var query1 = efContext.Products
                .GroupJoin(
                     efContext.Sales.Where(s => s.SaleDt.Date == DateTime.Today),
                      p => p.Id,
@@ -137,12 +145,44 @@ namespace ADO1.MainWindows
                          Cnt = sales.Count()
                      }
                 ).OrderByDescending(g => g.Cnt);
-            foreach (var item in query3)
+            foreach (var item in query1)
             {
                 LogBlock.Text += $"{item.Name} -- {item.Cnt}\n";
             }
-            BestProduct.Content = query3
-                .First().Name+" "+query3.First().Cnt;
+            BestProduct.Content = query1
+                .First().Name+" "+query1.First().Cnt+"pcs.";
+            #endregion
+
+            #region SaleQuantity
+            var query2 = efContext.Products
+               .GroupJoin(
+                    efContext.Sales.Where(s => s.SaleDt.Date == DateTime.Today),
+                     p => p.Id,
+                     s => s.ProductId,
+                     (p, sales) => new
+                     {
+                         Name = p.Name,
+                         QuantitySum = sales.Sum(s=>s.Quantity)
+                     }
+                ).OrderByDescending(g => g.QuantitySum);
+            BestProductCnt.Content = query2
+                .First().Name + " " + query2.First().QuantitySum+"pcs.";
+            #endregion
+
+            #region Sum
+            var query3 = efContext.Products
+                .GroupJoin(
+                    efContext.Sales.Where(s=>s.SaleDt.Date==DateTime.Today),
+                    p => p.Id,
+                    s => s.ProductId,
+                    (p, sales) => new
+                    {
+                        Name = p.Name,
+                        Sum = sales.Sum(s => s.Quantity) * p.Price
+                    }
+                ).OrderByDescending(g=>g.Sum);
+            BestProductSum.Content = query3.First().Name + " " + query3.First().Sum +"grn.";
+            #endregion
         }
 
         private void AddDepartmentButton_Click(object sender, RoutedEventArgs e)

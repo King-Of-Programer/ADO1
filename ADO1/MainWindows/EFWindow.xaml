@@ -183,11 +183,23 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Grid.Column="0"
-                       Content="Best Product:"
-                       FontSize="18"/>
+                       Content="Best Product checks:"
+                       FontSize="15"/>
                 <Label Grid.Row="0" Grid.Column="1"
                        x:Name="BestProduct"
-                       FontSize="18"/>
+                       FontSize="12"/>
+                <Label Grid.Row="1" Grid.Column="0"
+                       Content="Best Product:"
+                       FontSize="15"/>
+                <Label Grid.Row="1" Grid.Column="1"
+                       x:Name="BestProductCnt"
+                       FontSize="12"/>
+                <Label Grid.Row="2" Grid.Column="0"
+                       Content="Best Product sum:"
+                       FontSize="15"/>
+                <Label Grid.Row="2" Grid.Column="1"
+                       x:Name="BestProductSum"
+                       FontSize="12"/>
             </Grid>
         </StackPanel>
 
