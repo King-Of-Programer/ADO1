@@ -69,28 +69,80 @@ namespace ADO1.MainWindows
             // Статистика продажів за сьогодні:
             // загалом продажів (чеків, записів у Sales) за сьогодні (усіх, у т.ч. видалених)
             SalesChecks.Content = efContext.Sales.Count();
+            
             // загальна кількість проданих товарів (сума)
             SalesCnt.Content = efContext.Sales.Sum(s => s.Quantity);
+            
             // фактичний час старту продажів сьогодні
             DateTime time = efContext.Sales.Min(s => s.SaleDt);
             StartMoment.Content = $"{time.Hour}:{time.Minute}:{time.Second}";
+            
             // час останнього продажу
             time = efContext.Sales.Max(s => s.SaleDt);
             FinishMoment.Content = $"{time.Hour}:{time.Minute}:{time.Second}";
+            
             // максимальна кількість товарів у одному чеку (за сьогодні)
             MaxCheckCnt.Content = efContext.Sales.Max(s => s.Quantity); ;
+            
             // "середній чек" за кількістю - середнє значення кількості 
             //  проданих товарів на один чек
             AvgCheckCnt.Content = efContext.Sales.Average(s => s.Quantity);
+            
             // Повернення - чеки, що є видаленими (кількість чеків за сьогодні)
             DeletedCheckCnt.Content = efContext.Sales.Where(s => s.DeleteDt != null && s.SaleDt == DateTime.Today).Count();
 
-            var query = efContext.Sales
-                .GroupBy(s => s.ProductId);// групування за s.ProductId
-            foreach (IGrouping<Guid,Sale> grp in query)
+            ///////////////////////////////////////////////////////////
+            ///
+
+            //var query = efContext.Sales
+            //    .Where(s=>s.SaleDt.Date==DateTime.Today)
+            //    .GroupBy(s => s.ProductId);// групування за s.ProductId
+
+            //foreach (IGrouping<Guid,Sale> grp in query)
+            //{
+            //    LogBlock.Text += grp.Key.ToString() + " " +// Guid - s.ProductId
+            //        grp.Count() + "\n";
+            //        // grp - це коллекція Sale, що має однаковий grp.Key (ProductId)
+            //}
+
+            //var query2 = efContext.Sales
+            //   .Where(s => s.SaleDt.Date == DateTime.Today)
+            //   .GroupBy(s => s.ProductId)   //  Після .GroupBy утворюється "коллекція" IGrouping<Guid,Sale> grp
+            //   .ToList()
+            //   .Join(                       //  .Join відбувається не з Sales, а з grp
+            //        efContext.Products,     //  1) з чим поэднуэмо (inner)
+            //        grp => grp.Key,         //  2) outerKey - ключ з "grp"
+            //        p => p.Id,              //  3) innerKey - ключ з Products (p)
+            //        (grp, p) => new         //  4) resultSelector - правило за яким
+            //        {                       //      з поєднаної пари (grp, p) утворюється нова
+            //            Name = p.Name,      //      послідовність ("колекція") - новий об'єкт
+            //            Cnt = grp.Count()   //      анонімного типу
+            //        }                       //
+            //    );// групування за s.ProductId
+            //LogBlock.Text = "";
+            //foreach (var item in query2)
+            //{
+            //    LogBlock.Text += $"{item.Name} -- {item.Cnt}\n";
+            //}
+
+            var query3 = efContext.Products
+               //.Where(s => s.SaleDt.Date == DateTime.Today)
+               .GroupJoin(
+                    efContext.Sales.Where(s => s.SaleDt.Date == DateTime.Today),
+                     p => p.Id,
+                     s => s.ProductId,
+                     (p, sales) => new
+                     {
+                         Name = p.Name,
+                         Cnt = sales.Count()
+                     }
+                ).OrderByDescending(g => g.Cnt);
+            foreach (var item in query3)
             {
-                LogBlock.Text += grp.Key.ToString() + '\n';// Guid - s.ProductId
+                LogBlock.Text += $"{item.Name} -- {item.Cnt}\n";
             }
+            BestProduct.Content = query3
+                .First().Name+" "+query3.First().Cnt;
         }
 
         private void AddDepartmentButton_Click(object sender, RoutedEventArgs e)
