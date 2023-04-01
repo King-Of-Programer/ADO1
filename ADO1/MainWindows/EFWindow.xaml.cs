@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ADO1.MainWindows
 {
@@ -66,6 +67,7 @@ namespace ADO1.MainWindows
 
         private void UpdateDailyStatistics()
         {
+            #region OneTablesQueries
             // Статистика продажів за сьогодні:
             // загалом продажів (чеків, записів у Sales) за сьогодні (усіх, у т.ч. видалених)
             SalesChecks.Content = efContext.Sales.Count();
@@ -90,9 +92,7 @@ namespace ADO1.MainWindows
             
             // Повернення - чеки, що є видаленими (кількість чеків за сьогодні)
             DeletedCheckCnt.Content = efContext.Sales.Where(s => s.DeleteDt != null && s.SaleDt == DateTime.Today).Count();
-
-            ///////////////////////////////////////////////////////////
-            ///
+            #endregion
 
             #region BadQuery
             //var query = efContext.Sales
@@ -127,13 +127,14 @@ namespace ADO1.MainWindows
             //}
             #endregion
 
+            #region TwoTablesQueries
             /* Д.З. Написати запити для визначення кращого товару
              * а) за кількістю чеків (класна робота)
              * б) за кількістю проданих шт
              * в) за сумою продажів 
              * Разом з назвою вивести також числову хар-ку (шт/грн)
              */
-            #region ChecksCount
+            //ChecksCount
             var query1 = efContext.Products
                .GroupJoin(
                     efContext.Sales.Where(s => s.SaleDt.Date == DateTime.Today),
@@ -145,15 +146,14 @@ namespace ADO1.MainWindows
                          Cnt = sales.Count()
                      }
                 ).OrderByDescending(g => g.Cnt);
-            foreach (var item in query1)
-            {
-                LogBlock.Text += $"{item.Name} -- {item.Cnt}\n";
-            }
+            //foreach (var item in query1)
+            //{
+            //    LogBlock.Text += $"{item.Name} -- {item.Cnt}\n";
+            //}
             BestProduct.Content = query1
                 .First().Name+" "+query1.First().Cnt+"pcs.";
-            #endregion
 
-            #region SaleQuantity
+            //SaleQuantity
             var query2 = efContext.Products
                .GroupJoin(
                     efContext.Sales.Where(s => s.SaleDt.Date == DateTime.Today),
@@ -167,9 +167,8 @@ namespace ADO1.MainWindows
                 ).OrderByDescending(g => g.QuantitySum);
             BestProductCnt.Content = query2
                 .First().Name + " " + query2.First().QuantitySum+"pcs.";
-            #endregion
 
-            #region Sum
+            //Sum
             var query3 = efContext.Products
                 .GroupJoin(
                     efContext.Sales.Where(s=>s.SaleDt.Date==DateTime.Today),
@@ -182,10 +181,8 @@ namespace ADO1.MainWindows
                     }
                 ).OrderByDescending(g=>g.Sum);
             BestProductSum.Content = query3.First().Name + " " + query3.First().Sum +"grn.";
-            #endregion
 
-            /////////////////////////////////////////////////////////
-            ///
+            #endregion
 
             #region BestManagerChecks
             var bestManagerCh = efContext.Managers
@@ -249,36 +246,36 @@ namespace ADO1.MainWindows
              	Man			Money = Quantity * Price
              	Sales
              */
-            BestManagerMoney.Content = "";
-            var queryMoney = efContext.Managers
-               .GroupJoin(
-                    efContext.Sales
-                    .Where(s => s.SaleDt.Date == DateTime.Today)
-                    .Join(
-                        efContext.Products,
-                        sale => sale.ProductId,
-                        product => product.Id,
-                        (sale, product) => new
-                        {
-                            ManagerId = sale.ManagerId,
-                            CheckSum = sale.Quantity * product.Price
-                        }),
-                    m => m.Id,
-                    s => s.ManagerId,
-                    (m, pricedChecks) => new
-                    {
-                        Manager = m,
-                        Cnt = pricedChecks.Sum(c => c.CheckSum)
-                    }
+            //BestManagerMoney.Content = "";
+            //var queryMoney = efContext.Managers
+            //   .GroupJoin(
+            //        efContext.Sales
+            //        .Where(s => s.SaleDt.Date == DateTime.Today)
+            //        .Join(
+            //            efContext.Products,
+            //            sale => sale.ProductId,
+            //            product => product.Id,
+            //            (sale, product) => new
+            //            {
+            //                ManagerId = sale.ManagerId,
+            //                CheckSum = sale.Quantity * product.Price
+            //            }),
+            //        m => m.Id,
+            //        s => s.ManagerId,
+            //        (m, pricedChecks) => new
+            //        {
+            //            Manager = m,
+            //            Cnt = pricedChecks.Sum(c => c.CheckSum)
+            //        }
 
-                )
-               .OrderByDescending(g => g.Cnt)
-               .First();
-            BestManagerMoney.Content =
-                queryMoney.Manager.Surname + " " +
-                queryMoney.Manager.Name[0] + ". " +
-                queryMoney.Manager.Secname[0] + ". -- " +
-                queryMoney.Cnt.ToString("0.00") + " UAH";
+            //    )
+            //   .OrderByDescending(g => g.Cnt)
+            //   .First();
+            //BestManagerMoney.Content =
+            //    queryMoney.Manager.Surname + " " +
+            //    queryMoney.Manager.Name[0] + ". " +
+            //    queryMoney.Manager.Secname[0] + ". -- " +
+            //    queryMoney.Cnt.ToString("0.00") + " UAH";
 
             #endregion
 
@@ -298,32 +295,88 @@ namespace ADO1.MainWindows
 	             			 \		   /
 	             			Money = Quantity * Price
              */
-            //BestManagerMoney.Content = "";
-            //var queryMoney = efContext.Managers
-            //   .GroupJoin(
-            //        efContext.Sales.Where(s => s.SaleDt.Date == DateTime.Today),
-            //         m => m.Id,
-            //         s => s.ManagerId,
-            //         (m, sales) => new
-            //         {
-            //             Manager = m,
-            //             Cnt = sales
-            //                .Join(
-            //                    efContext.Products,
-            //                    sale => sale.ProductId,
-            //                    product => product.Id,
-            //                    (sale, product) => sale.Quantity * product.Price)
-            //                .Sum()
-            //         }
-            //    ).OrderByDescending(g => g.Cnt).First();
-            //BestManagerMoney.Content =
-            //    queryMoney.Manager.Surname + " " +
-            //    queryMoney.Manager.Name[0] + ". " +
-            //    queryMoney.Manager.Secname[0] + ". -- " +
-            //    queryMoney.Cnt.ToString("0.00") + " UAH";
+            BestManagerMoney.Content = "";
+            var queryMoney = efContext.Managers
+               .GroupJoin(
+                    efContext.Sales.Where(s => s.SaleDt.Date == DateTime.Today),
+                     m => m.Id,
+                     s => s.ManagerId,
+                     (m, sales) => new
+                     {
+                         Manager = m,
+                         Cnt = sales
+                            .Join(
+                                efContext.Products,
+                                sale => sale.ProductId,
+                                product => product.Id,
+                                (sale, product) => sale.Quantity * product.Price)
+                            .Sum()
+                     }
+                ).OrderByDescending(g => g.Cnt).First();
+            BestManagerMoney.Content =
+                queryMoney.Manager.Surname + " " +
+                queryMoney.Manager.Name[0] + ". " +
+                queryMoney.Manager.Secname[0] + ". -- " +
+                queryMoney.Cnt.ToString("0.00") + " UAH";
             #endregion
 
-        }       
+            #region Departments
+            /*
+             Select d.Name as DepartmentName, 
+             SUM(p.Price*s.Quantity) as SumOfAllSales, 
+             COUNT(s.ProductId) as ChecksCount, 
+             SUM(s.Quantity) as TotalQuantity
+             
+             from Departments as d
+             
+             INNER JOIN Managers as m
+             on d.Id=m.IdMainDep
+             Inner Join Sales as s
+             on s.ManagerId=m.Id
+             Inner Join Products as p
+             on s.ProductId=p.Id
+             
+             GROUP BY d.Name
+             Order by SumOfAllSales DESC
+             
+             */
+            var departmentsStats = efContext.Departments.ToList()
+                 .GroupJoin(
+                 efContext.Managers
+                 .GroupJoin(
+                 efContext.Sales,
+                 manager => manager.Id,
+                 sale => sale.ManagerId,
+                 (manager, sales) => new
+                 {
+                     Manager = manager,
+                     Cnt = sales.Count(),
+                     Sum = sales.Sum(s => s.Quantity),
+                     Money = sales.Join(
+                                efContext.Products,
+                                sale => sale.ProductId,
+                                product => product.Id,
+                                (sale, product) => sale.Quantity * product.Price)
+                            .Sum()
+                 }),
+                 d => d.Id,
+                 m => m.Manager.IdMainDep,
+                 (dep, managers) => new
+                 {
+                     Department = dep,
+                     Cnt = managers.Sum(m => m.Cnt),
+                     Sum = managers.Sum(m => m.Sum),
+                     Money = managers.Sum(m => m.Money)
+                 }).OrderByDescending(d => d.Money);
+
+            Deps.Content = "";
+            foreach (var department in departmentsStats)
+            {
+                Deps.Content += $"{department.Department.Name} -- {department.Cnt} -- {department.Sum} -- {department.Money.ToString("0.00")}\n";
+            }
+            #endregion
+
+        }
 
 
         private void AddDepartmentButton_Click(object sender, RoutedEventArgs e)

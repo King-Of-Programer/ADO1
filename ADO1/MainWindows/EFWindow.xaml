@@ -227,10 +227,34 @@
 
             </Grid>
         </StackPanel>
-
-        <TextBlock
-            Grid.Row="1"
-            Grid.Column="2"
-            x:Name="LogBlock"/>
+        <StackPanel Orientation="Vertical"
+                    Grid.Row="1"
+                    Grid.Column="2">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <Label Content="Departments"
+                   HorizontalAlignment="Center"
+                   FontSize="18"/>
+            </StackPanel>
+            <Grid ShowGridLines="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.4*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="5" Grid.Column="0"
+                       Content="Departments"
+                       FontSize="13"/>
+                <Label Grid.Row="5" Grid.Column="1"
+                       x:Name="Deps"
+                       FontSize="12"
+                       xml:space="preserve" 
+                       Content="1. --&#13;2. --&#13;3. --&#13;"/>
+            </Grid>
+        </StackPanel>
+        
     </Grid>
 </Window>
