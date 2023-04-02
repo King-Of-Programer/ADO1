@@ -16,5 +16,15 @@ namespace ADO1.EfCore
         public Guid? IdSecDep { get; set; } // Якщо NULL не забронений, Guid використовується з Nullable(?)
         public Guid? IdChief { get; set; } //Gguid? - скорочення від Nullable<Guid>
         public DateTime? DeleteDt { get; set; }
+
+        // NAVIGATION PROPERTIES /////////////////
+        public Department MainDep { get; set; }
+        public Department SecDep { get; set; }
+
+        // колекція продажів(чеків)
+        public List<Sale> Sales { get; set; }
+
+        // колекція проданих товарів
+        public List<Product> Products { get; set; }
     }
 }

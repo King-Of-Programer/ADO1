@@ -32,6 +32,20 @@ namespace ADO1.EfCore
             SeedDepartments(modelBuilder);
             SeedProducts(modelBuilder);
             SeedManagers(modelBuilder);
+
+            // налагодження відношень між сутностями
+            modelBuilder.Entity<Manager>()          // Відносини один-до-багатьох
+                .HasOne(m => m.MainDep)             // У Manager нав. вл. MainDep
+                .WithMany(d => d.Workers)           // У її типу (Department) - це Workers
+                .HasForeignKey(m => m.IdMainDep)    // Зовнішній ключ (IdMainDep) - потрібно, оскільки не "DepartmentId"
+                .HasPrincipalKey(d => d.Id);        // (опціонально) внутрішній ключ
+
+            modelBuilder.Entity<Manager>()         
+                .HasOne(m => m.SecDep)            
+                .WithMany(d => d.SubWorkers)          
+                .HasForeignKey(m => m.IdSecDep)   
+                .HasPrincipalKey(d => d.Id);
+
         }
 
         #region Data seed

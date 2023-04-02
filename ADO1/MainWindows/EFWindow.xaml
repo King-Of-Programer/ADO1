@@ -51,12 +51,18 @@
                       MaxHeight="370">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn
+                        <!--<GridViewColumn
                             Header="Id"
-                            DisplayMemberBinding="{Binding Path=Id}"/>
+                            DisplayMemberBinding="{Binding Path=Id}"/>-->
                         <GridViewColumn
                             Header="Name"
                             DisplayMemberBinding="{Binding Path=Name}"/>
+                        <GridViewColumn
+                            Header="Workers"
+                            DisplayMemberBinding="{Binding Path=Workers.Count}"/>
+                        <GridViewColumn
+                            Header="SubWorkers"
+                            DisplayMemberBinding="{Binding Path=SubWorkers.Count}"/>
                         <GridViewColumn
                             Width="0"
                             Header="DeleteDt"
@@ -227,6 +233,7 @@
 
             </Grid>
         </StackPanel>
+        
         <StackPanel Orientation="Vertical"
                     Grid.Row="1"
                     Grid.Column="2">
@@ -254,7 +261,57 @@
                        xml:space="preserve" 
                        Content="1. --&#13;2. --&#13;3. --&#13;"/>
             </Grid>
+
+            
+
         </StackPanel>
-        
+
+        <StackPanel Orientation="Vertical"
+                    Grid.Row="0"
+                    Grid.Column="2">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <CheckBox x:Name="ShowAllManagersCheckBox"
+                          Content="Show deleted"
+                          VerticalAlignment="Center"
+                          Margin="10 0 35 0"/>
+                <Label Content="Managers"
+                       FontSize="18"/>
+                <Button Content="+"
+                        FontSize="18"
+                        Margin="7 3"
+                        Padding="7 1 7 5"
+                        x:Name="AddManagerButton"
+                        Click="AddManagerButton_Click"/>
+            </StackPanel>
+
+            <ListView x:Name="manList"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      MaxHeight="370">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn
+                            Header="Name"
+                            DisplayMemberBinding="{Binding Path=Name}"/>
+                        <GridViewColumn
+                            Header="Surname"
+                            DisplayMemberBinding="{Binding Path=Surname}"/>
+                        <GridViewColumn
+                            Header="Dep"
+                            DisplayMemberBinding="{Binding Path=MainDep.Name}"/>
+                        <GridViewColumn
+                            Header="SecDep"
+                            DisplayMemberBinding="{Binding Path=SecDep.Name}"/>
+                    </GridView>
+                </ListView.View>
+                <ListView.Resources>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <EventSetter
+                            Event="MouseDoubleClick"
+                            Handler="ManagerItem_MouseDoubleClick"/>
+                    </Style>
+                </ListView.Resources>
+            </ListView>
+        </StackPanel>
     </Grid>
 </Window>

@@ -47,6 +47,12 @@ namespace ADO1.MainWindows
             depListView = CollectionViewSource.GetDefaultView(depList.ItemsSource);
             depListView.Filter = //Predicate<object>
                 obj => (obj as Department)?.DeleteDt == null;
+
+            efContext.Managers.Load();
+            manList.ItemsSource = efContext
+                .Managers
+                .Local
+                .ToObservableCollection();
             UpdateMonitor();
             UpdateDailyStatistics();
         }
@@ -494,6 +500,16 @@ namespace ADO1.MainWindows
             efContext.SaveChanges();
             UpdateMonitor();
             UpdateDailyStatistics();
+        }
+
+        private void ManagerItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void AddManagerButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

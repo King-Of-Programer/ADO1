@@ -14,5 +14,11 @@ namespace ADO1.EfCore
         public Guid ManagerId { get; set; }
         public DateTime SaleDt { get; set; }
         public DateTime? DeleteDt { get; set; }
+
+
+        // NAVIGATION PROPERTIES /////////////////
+
+        public Manager Manager { get; set; }
+        public Product Product { get; set; }
     }
 }
