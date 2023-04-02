@@ -38,6 +38,7 @@ namespace ADO1.MainWindows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            efContext.Sales.Load();
             efContext.Departments.Load();
             depList.ItemsSource = efContext
                 .Departments

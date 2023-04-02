@@ -299,9 +299,12 @@
                         <GridViewColumn
                             Header="Dep"
                             DisplayMemberBinding="{Binding Path=MainDep.Name}"/>
-                        <GridViewColumn
+                        <!--<GridViewColumn
                             Header="SecDep"
-                            DisplayMemberBinding="{Binding Path=SecDep.Name}"/>
+                            DisplayMemberBinding="{Binding Path=SecDep.Name}"/>-->
+                        <GridViewColumn
+                            Header="SalesChecks"
+                            DisplayMemberBinding="{Binding Path=Sales.Count}"/>
                     </GridView>
                 </ListView.View>
                 <ListView.Resources>

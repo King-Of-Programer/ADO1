@@ -46,6 +46,14 @@ namespace ADO1.EfCore
                 .HasForeignKey(m => m.IdSecDep)   
                 .HasPrincipalKey(d => d.Id);
 
+            modelBuilder.Entity<EfCore.Sale>()
+                .HasOne(s => s.Manager)
+                .WithMany(m => m.Sales);
+
+            modelBuilder.Entity<EfCore.Sale>()
+                .HasOne(s => s.Product)
+                .WithMany(p => p.Sales);
+
         }
 
         #region Data seed
